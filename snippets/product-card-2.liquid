@@ -17,7 +17,7 @@
 <c-product-card-2 class="c-product-card-2 js-product-card-2 {% if rtl %}c-product-card-2--rtl{% endif %}">
   <div class="c-product-card-2__inner">
     {% comment %} Image {% endcomment %}
-    <a href="{{ product.url }}" class="c-product-card-2__image">
+    <div class="c-product-card-2__image">
       {% if product.metafields.custom.product_tags.value != blank %}
         <div class="c-product-card-2__badges">
           {% for badge in product.metafields.custom.product_tags.value %}
@@ -38,7 +38,7 @@
       {% elsif product.featured_image != blank %}
         {% render 'image-lazy', image: product.featured_image %}
       {% endif %}
-    </a>
+    </div>
 
     {% comment %} Main {% endcomment %}
     <div class="c-product-card-2__main">

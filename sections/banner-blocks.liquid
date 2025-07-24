@@ -1,5 +1,13 @@
 {{ 'section-banner-blocks.css' | asset_url | stylesheet_tag }}
 
+{% liquid
+  assign rtl = false
+
+  if localization.language.iso_code == 'ar'
+    assign rtl = true
+  endif
+%}
+
 <style>
   #shopify-section-{{ section.id }} .s-banner-blocks {
     {% if section.settings.enable_height %}
@@ -12,7 +20,7 @@
   }
 
   #shopify-section-{{ section.id }} .s-banner-blocks .s-banner-blocks__content {
-    align-items: {{ section.settings.content_horizontal_align_mobile }};
+    align-items: center;
     justify-content: {{ section.settings.content_vertical_align_mobile }};
   }
   #shopify-section-{{ section.id }} .s-banner-blocks .s-banner-blocks__title {
@@ -36,7 +44,6 @@
       margin-top: {{ section.settings.margin_top_desktop }}px;
       margin-bottom: {{ section.settings.margin_bottom_desktop }}px;
       padding-left: {{ section.settings.padding_left_desktop }}px;
-      padding-right: {{ section.settings.padding_right_desktop }}px;
     }
 
     #shopify-section-{{ section.id }} .s-banner-blocks .s-banner-blocks__title {
@@ -50,7 +57,6 @@
 
     #shopify-section-{{ section.id }} .s-banner-blocks .s-banner-blocks__blocks {
       padding-left: {{ section.settings.content_padding_left_desktop }}px;
-      padding-right: {{ section.settings.content_padding_right_desktop }}px;
       margin-right: {{ section.settings.blocks_margin_right }}%;
     }
   }
@@ -61,9 +67,15 @@
 %}
 
 <div class="s-banner-blocks">
-  {% if section.settings.section_title != blank %}
+  {% if section.settings.section_title != blank and rtl %}
     <h2 class="s-banner-blocks__title">
       {{ section.settings.section_title }}
+    </h2>
+  {% endif %}
+
+  {% if section.settings.section_title_ar != blank %}
+    <h2 class="s-banner-blocks__title">
+      {{ section.settings.section_title_ar }}
     </h2>
   {% endif %}
 
@@ -183,7 +195,9 @@
                 font-size: {{ block.settings.text_size }}px;
 
                 {% if block.settings.text_display == 'mobile' %}
-                  display: none;
+                  position: fixed;  
+                  top: 100px;
+                  left: 20px;
                 {% endif %}
               }
 
@@ -241,14 +255,14 @@
   "settings": [
     {
       "type": "header",
-      "content": "Banner Height"
+      "content": "Banner Heigth"
     },
     {
       "type": "checkbox",
       "default": true,
-      "label": "Enable Static Height",
+      "label": "Enable Static Heigth",
       "id": "enable_height",
-      "info": "If disabled then height will be calculated by heigth of image"
+      "info": "If disabled then heigth will be calculated by heigth of image"
     },
     {
       "type": "range",
@@ -257,7 +271,7 @@
       "max": 1000,
       "step": 10,
       "unit": "px",
-      "label": "Height (Desktop)",
+      "label": "Heigth (Desktop)",
       "default": 40
     },
     {
@@ -267,7 +281,7 @@
       "max": 1000,
       "step": 10,
       "unit": "px",
-      "label": "Height (Mobile)",
+      "label": "Heigth (Mobile)",
       "default": 40
     },
     {
@@ -487,14 +501,14 @@
         },
         {
           "value": "flex-end",
-          "label": "Bottom"
+          "label": "Botom"
         }
       ],
       "default": "center"
     },
     {
       "type": "header",
-      "content": "Banner Settings"
+      "content": "Banner Settinks"
     },
     {
       "type": "url",
@@ -517,13 +531,17 @@
     },
     {
       "type": "header",
-      "content": "Title Settings"
+      "content": "Title Setings"
     },
     {
       "type": "text",
       "id": "section_title",
-      "label": "Title",
-      "default": "TITLE"
+      "label": "Title"
+    },
+    {
+      "type": "text",
+      "id": "section_title_ar",
+      "label": "Title AR"
     },
     {
       "type": "range",
@@ -581,7 +599,7 @@
     {
       "type": "color",
       "id": "title_bg_color",
-      "label": "Title Background Color",
+      "label": "Title Color",
       "default": "#e3d9d7"
     }
   ],
@@ -683,7 +701,7 @@
         {
           "type": "richtext",
           "id": "content",
-          "label": "Block Text",
+          "label": "Block Text AR",
           "default": "<p></p>"
         },
         {
@@ -726,7 +744,7 @@
           "options": [
             {
               "value": "start",
-              "label": "Left"
+              "label": "Laft"
             },
             {
               "value": "center",
@@ -794,7 +812,7 @@
           "min": 0,
           "max": 60,
           "step": 2,
-          "label": "Bottom Margin (Desktop)"
+          "label": "Botom Margin (Desktop)"
         },
         {
           "type": "range",
@@ -803,7 +821,7 @@
           "min": 0,
           "max": 60,
           "step": 2,
-          "label": "Bottom Margin (Mobile)"
+          "label": "Bottom Mergin (Mobile)"
         },
         {
           "type": "header",
@@ -812,7 +830,7 @@
         {
           "type": "select",
           "id": "button_display",
-          "label": "Button Display",
+          "label": "Bottom Display",
           "options": [
             {
               "value": "both",

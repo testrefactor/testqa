@@ -1,0 +1,761 @@
+{% if template.name == 'product' %}
+  {{ 'section-modal-size-guide.css' | asset_url | stylesheet_tag }}
+  {{ 'component-video.css' | asset_url | stylesheet_tag }}
+
+  <script src="{{ 'section-modal-size-guide.js' | asset_url }}" defer></script>
+  <script src="{{ 'component-video.js' | asset_url }}" defer></script>
+  {% comment %} Please note, we have an important script under this section, responsible for bra size results {% endcomment %}
+
+  {% style %}
+    #shopify-section-{{ section.id }} {
+      width: 100%;
+      height: 100vh;
+      pointer-events: none;
+      background: transparent;
+      overflow-x: hidden;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 14;
+      transition: background 400ms ease;
+    }
+  {% endstyle %}
+
+  {% liquid
+    assign rtl = false
+
+    if localization.language.iso_code == 'ar'
+      assign rtl = true
+    endif
+
+    assign all_size_tables_blocks = section.blocks | where: 'type', 'table-page'
+    assign measure_guide_blocks = section.blocks | where: 'type', 'measure-guide'
+
+    assign product_type = product.type | handleize
+    assign size_table_block = null
+
+    for block in all_size_tables_blocks
+      assign product_types = block.settings.product_types | split: ','
+
+      for type in product_types
+        assign table_type = type | handleize
+        if table_type == product_type
+          assign size_table_block = block
+          break
+        endif
+      endfor
+    endfor
+  %}
+
+  {% comment %} its very important that data-result is in single quotes {% endcomment %}
+  <s-modal-size-guide
+    class="s-modal-size-guide {% if rtl %}s-modal-size-guide--rtl{% endif %}"
+    data-measure="cm"
+    data-desktop-tab="table"
+  >
+    <div class="s-modal-size-guide__overlay js-modal-size-guide__close"></div>
+
+    <div class="s-modal-size-guide__modal">
+      {% if size_table_block.settings.is_bra %}
+        {% liquid
+          assign underband_cm_values = size_table_block.settings.underband_cm_values | split: ':::'
+          assign underband_inch_values = size_table_block.settings.underband_inch_values | split: ':::'
+
+          assign overbust_cm_values = size_table_block.settings.overbust_cm_values | split: ':::'
+          assign overbust_inch_values = size_table_block.settings.overbust_inch_values | split: ':::'
+
+          assign error_text = size_table_block.settings.error_text
+          if rtl
+            assign error_text = size_table_block.settings.error_text_ar | default: size_table_block.settings.error_text
+          endif
+        %}
+
+        <div class="s-modal-size-guide__header">
+          <h3 class="s-modal-size-guide__title">
+            {{ 'sections.modal-size-guide.title_bra' | t }}
+          </h3>
+
+          {% comment %} Those tabs are only for desktop view {% endcomment %}
+          <div class="s-modal-size-guide__tabs">
+            <button class="s-modal-size-guide__tab-btn js-modal-size-guide__desktop-tab" data-tab-type="table">
+              {{ 'sections.modal-size-guide.size_and_fit' | t }}
+            </button>
+            <button class="s-modal-size-guide__tab-btn js-modal-size-guide__desktop-tab" data-tab-type="fit">
+              {{ 'sections.modal-size-guide.find_your_fit' | t }}
+            </button>
+            <button class="s-modal-size-guide__tab-btn js-modal-size-guide__desktop-tab" data-tab-type="measure">
+              {{ 'sections.modal-size-guide.measuring_guide' | t }}
+            </button>
+          </div>
+        </div>
+
+        {% comment %} Mobile Modal content {% endcomment %}
+        <div class="s-modal-size-guide__content s-modal-size-guide__content--mobile">
+          {% comment %} Size Table {% endcomment %}
+          <div class="s-modal-size-guide__tab-item is-active">
+            <button class="js-modal-size-guide__toggle-mobile-tab">
+              <h4>
+                {{ 'sections.modal-size-guide.size_and_fit' | t }}
+
+                {% render 'icon-chevron-down' %}
+              </h4>
+            </button>
+
+            <div class="s-modal-size-guide__tab-content">
+              <div class="s-modal-size-guide__tables-list s-modal-size-guide__tables-list--type-bra">
+                {{ size_table_block.settings.page.content }}
+              </div>
+            </div>
+          </div>
+
+          {% comment %} Find Your Fit {% endcomment %}
+          <div class="s-modal-size-guide__tab-item is-active">
+            <button class="js-modal-size-guide__toggle-mobile-tab">
+              <h4>
+                {{ 'sections.modal-size-guide.find_your_fit' | t }}
+
+                {% render 'icon-chevron-down' %}
+              </h4>
+            </button>
+
+            <div class="s-modal-size-guide__tab-content">
+              <div>
+                <form class="s-modal-size-guide__tab-form js-modal-size-guide__tab-form-m">
+                  <div class="s-modal-size-guide__inputs-wrapper">
+                    <label class="s-modal-size-guide__input-label js-modal-size-guide__input-label">
+                      <input
+                        class="s-modal-size-guide__input js-modal-size-guide__input is-checked"
+                        type="radio"
+                        name="measure_type"
+                        value="cm"
+                        checked
+                      >
+
+                      {{ 'sections.modal-size-guide.cm' | t }}
+                    </label>
+
+                    <label class="s-modal-size-guide__input-label js-modal-size-guide__input-label">
+                      <input
+                        class="s-modal-size-guide__input js-modal-size-guide__input"
+                        type="radio"
+                        name="measure_type"
+                        value="inch"
+                      >
+
+                      {{ 'sections.modal-size-guide.inch' | t }}
+                    </label>
+                  </div>
+
+                  <div class="s-modal-size-guide__form-main-content">
+                    {% comment %} Underband {% endcomment %}
+                    <div class="s-modal-size-guide__selector-wrapper">
+                      <label>
+                        {{ 'sections.modal-size-guide.underband' | t }}
+                      </label>
+
+                      <select
+                        class="s-modal-size-guide__select is-active js-modal-size-guide__select-cm js-modal-size-guide__underband-cm"
+                      >
+                        <option value="" disabled selected hidden>
+                          {{ 'sections.modal-size-guide.underband_placeholder' | t }}
+                        </option>
+
+                        {% for value in underband_cm_values %}
+                          {% liquid
+                            assign new_value = value | split: '='
+                            assign size_measure = new_value[0]
+                            assign size_value = new_value[1]
+                          %}
+                          <option value="{{size_value}}">
+                            {{ size_measure }}
+                          </option>
+                        {% endfor %}
+                      </select>
+
+                      <select
+                        class="s-modal-size-guide__select js-modal-size-guide__select-inch js-modal-size-guide__underband-inch"
+                      >
+                        <option value="" disabled selected hidden>
+                          {{ 'sections.modal-size-guide.underband_placeholder' | t }}
+                        </option>
+                        {% for value in underband_inch_values %}
+                          {% liquid
+                            assign new_value = value | split: '='
+                            assign size_measure = new_value[0]
+                            assign size_value = new_value[1]
+                          %}
+                          <option value="{{size_value}}">
+                            {{ size_measure }}
+                          </option>
+                        {% endfor %}
+                      </select>
+                    </div>
+
+                    {% comment %} Overbust {% endcomment %}
+                    <div class="s-modal-size-guide__selector-wrapper">
+                      <label>
+                        {{ 'sections.modal-size-guide.overbust' | t }}
+                      </label>
+
+                      <select
+                        class="s-modal-size-guide__select is-active js-modal-size-guide__select-cm js-modal-size-guide__overbust-cm"
+                      >
+                        <option value="" disabled selected hidden>
+                          {{ 'sections.modal-size-guide.overbust_placeholder' | t }}
+                        </option>
+
+                        {% for value in overbust_cm_values %}
+                          {% liquid
+                            assign new_value = value | split: '='
+                            assign size_measure = new_value[0]
+                            assign size_value = new_value[1]
+                          %}
+                          <option value="{{size_value}}">
+                            {{ size_measure }}
+                          </option>
+                        {% endfor %}
+                      </select>
+
+                      <select
+                        class="s-modal-size-guide__select js-modal-size-guide__select-inch js-modal-size-guide__overbust-inch"
+                      >
+                        <option value="" disabled selected hidden>
+                          {{ 'sections.modal-size-guide.overbust_placeholder' | t }}
+                        </option>
+
+                        {% for value in overbust_inch_values %}
+                          {% liquid
+                            assign new_value = value | split: '='
+                            assign size_measure = new_value[0]
+                            assign size_value = new_value[1]
+                          %}
+                          <option value="{{size_value}}">
+                            {{ size_measure }}
+                          </option>
+                        {% endfor %}
+                      </select>
+                    </div>
+
+                    <button class="s-modal-size-guide__submit" type="submit">
+                      {{ 'sections.modal-size-guide.submit' | t }}
+                    </button>
+
+                    <div class="s-modal-size-guide__result-wrapper s-modal-size-guide__result-wrapper">
+                      <p>
+                        {{ 'sections.modal-size-guide.size_result_text' | t }}
+                      </p>
+                      <span class="js-modal-size-guide__result"> </span>
+                    </div>
+
+                    <div class="s-modal-size-guide__result-error js-modal-size-guide__result-error">
+                      {{ error_text }}
+                    </div>
+
+                    <p class="s-modal-size-guide__form-subtitle">
+                      {{ 'sections.modal-size-guide.measure_sub' | t }}
+                      <a href="#measure-guide-tab-item">
+                        {{ 'sections.modal-size-guide.measuring_guide' | t }}
+                      </a>
+                    </p>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          {% comment %} Measuring Guide {% endcomment %}
+          <div class="s-modal-size-guide__tab-item is-active" id="measure-guide-tab-item">
+            <button class="js-modal-size-guide__toggle-mobile-tab">
+              <h4>
+                {{ 'sections.modal-size-guide.measuring_guide' | t }}
+
+                {% render 'icon-chevron-down' %}
+              </h4>
+            </button>
+
+            <div class="s-modal-size-guide__tab-content">
+              <div>
+                <div class="s-modal-size-guide__tab-measure">
+                  <h5>
+                    {{ 'sections.modal-size-guide.measure_title' | t }}
+                  </h5>
+
+                  {% liquid
+                    assign video_m = size_table_block.settings.video_guide_m
+                    assign video_d = size_table_block.settings.video_guide_d
+
+                    if rtl
+                      assign video_m = size_table_block.settings.video_guide_m_ar | default: size_table_block.settings.video_guide_m
+                      assign video_d = size_table_block.settings.video_guide_d_ar | default: size_table_block.settings.video_guide_d
+                    endif
+
+                    if video_m == blank
+                      assign video_m = video_d
+                    endif
+                  %}
+
+                  {% if video_m != blank %}
+                    <div class="s-modal-size-guide__video-wrapper s-modal-size-guide__video-wrapper--mobile">
+                      {% render 'video', video: video_m %}
+                    </div>
+
+                    {% comment %} we will render desktop video in desktop modal content (or maybe we will have it here if i transform event listeners and styles?) {% endcomment %}
+                  {% endif %}
+
+                  {% for block in measure_guide_blocks %}
+                    {% liquid
+                      assign title = block.settings.title
+                      assign step_image = block.settings.step_image
+                      assign text = block.settings.text
+
+                      if rtl
+                        assign title = block.settings.title_ar | default: block.settings.title
+                        assign step_image = block.settings.step_image_ar | default: block.settings.step_image
+                        assign text = block.settings.text_ar | default: block.settings.text
+                      endif
+                    %}
+
+                    <div class="s-modal-size-guide__measure-block">
+                      <div class="s-modal-size-guide__measure-top">
+                        {% if step_image != blank %}
+                          {% render 'image-lazy', image: step_image %}
+                        {% endif %}
+
+                        {% if title != blank %}
+                          <h6>
+                            {{ title }}
+                          </h6>
+                        {% endif %}
+                      </div>
+
+                      {% if text != blank %}
+                        <div class="s-modal-size-guide__measure-text">
+                          {{ text }}
+                        </div>
+                      {% endif %}
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% comment %} Desktop Modal content {% endcomment %}
+        <div class="s-modal-size-guide__content s-modal-size-guide__content--desktop">
+          {% comment %} Size Table {% endcomment %}
+          <div class="s-modal-size-guide__content-item s-modal-size-guide__content-item--table">
+            <div class="s-modal-size-guide__tables-list">
+              {{ size_table_block.settings.page.content }}
+            </div>
+          </div>
+
+          {% comment %} Find Your Fit {% endcomment %}
+          <div class="s-modal-size-guide__content-item s-modal-size-guide__content-item--fit">
+            <form class="s-modal-size-guide__tab-form js-modal-size-guide__tab-form-d">
+              <div class="s-modal-size-guide__inputs-wrapper">
+                <label class="s-modal-size-guide__input-label js-modal-size-guide__input-label">
+                  <input
+                    class="s-modal-size-guide__input js-modal-size-guide__input is-checked"
+                    type="radio"
+                    name="measure_type"
+                    value="cm"
+                    checked
+                  >
+
+                  {{ 'sections.modal-size-guide.cm' | t }}
+                </label>
+
+                <label class="s-modal-size-guide__input-label js-modal-size-guide__input-label">
+                  <input
+                    class="s-modal-size-guide__input js-modal-size-guide__input"
+                    type="radio"
+                    name="measure_type"
+                    value="inch"
+                  >
+
+                  {{ 'sections.modal-size-guide.inch' | t }}
+                </label>
+              </div>
+
+              <div class="s-modal-size-guide__form-main-content">
+                {% comment %} Underband {% endcomment %}
+                <div class="s-modal-size-guide__selector-wrapper">
+                  <label>
+                    {{ 'sections.modal-size-guide.underband' | t }}
+                  </label>
+
+                  <select
+                    class="s-modal-size-guide__select is-active js-modal-size-guide__select-cm js-modal-size-guide__underband-cm"
+                  >
+                    <option value="" disabled selected hidden>
+                      {{ 'sections.modal-size-guide.underband_placeholder' | t }}
+                    </option>
+
+                    {% for value in underband_cm_values %}
+                      {% liquid
+                        assign new_value = value | split: '='
+                        assign size_measure = new_value[0]
+                        assign size_value = new_value[1]
+                      %}
+                      <option value="{{size_value}}">
+                        {{ size_measure }}
+                      </option>
+                    {% endfor %}
+                  </select>
+
+                  <select
+                    class="s-modal-size-guide__select js-modal-size-guide__select-inch js-modal-size-guide__underband-inch"
+                  >
+                    <option value="" disabled selected hidden>
+                      {{ 'sections.modal-size-guide.underband_placeholder' | t }}
+                    </option>
+                    {% for value in underband_inch_values %}
+                      {% liquid
+                        assign new_value = value | split: '='
+                        assign size_measure = new_value[0]
+                        assign size_value = new_value[1]
+                      %}
+                      <option value="{{size_value}}">
+                        {{ size_measure }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                {% comment %} Overbust {% endcomment %}
+                <div class="s-modal-size-guide__selector-wrapper">
+                  <label>
+                    {{ 'sections.modal-size-guide.overbust' | t }}
+                  </label>
+
+                  <select
+                    class="s-modal-size-guide__select is-active js-modal-size-guide__select-cm js-modal-size-guide__overbust-cm"
+                  >
+                    <option value="" disabled selected hidden>
+                      {{ 'sections.modal-size-guide.overbust_placeholder' | t }}
+                    </option>
+                    {% for value in overbust_cm_values %}
+                      {% liquid
+                        assign new_value = value | split: '='
+                        assign size_measure = new_value[0]
+                        assign size_value = new_value[1]
+                      %}
+                      <option value="{{size_value}}">
+                        {{ size_measure }}
+                      </option>
+                    {% endfor %}
+                  </select>
+
+                  <select
+                    class="s-modal-size-guide__select js-modal-size-guide__select-inch js-modal-size-guide__overbust-inch"
+                  >
+                    <option value="" disabled selected hidden>
+                      {{ 'sections.modal-size-guide.overbust_placeholder' | t }}
+                    </option>
+                    {% for value in overbust_inch_values %}
+                      {% liquid
+                        assign new_value = value | split: '='
+                        assign size_measure = new_value[0]
+                        assign size_value = new_value[1]
+                      %}
+                      <option value="{{size_value}}">
+                        {{ size_measure }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <button class="s-modal-size-guide__submit" type="submit">
+                  {{ 'sections.modal-size-guide.submit' | t }}
+                </button>
+
+                <p class="s-modal-size-guide__form-subtitle s-modal-size-guide__form-subtitle--mobile">
+                  {{ 'sections.modal-size-guide.measure_sub' | t }}
+                  <a href="#measure-guide-tab-item">
+                    {{ 'sections.modal-size-guide.measuring_guide' | t }}
+                  </a>
+                </p>
+              </div>
+
+              <div class="s-modal-size-guide__result-wrapper js-modal-size-guide__result-wrapper">
+                <p>
+                  {{ 'sections.modal-size-guide.size_result_text' | t }}
+                </p>
+                <span class="js-modal-size-guide__result"> </span>
+              </div>
+
+              <div class="s-modal-size-guide__result-error js-modal-size-guide__result-error">
+                {{ error_text }}
+              </div>
+
+              <p class="s-modal-size-guide__form-subtitle s-modal-size-guide__form-subtitle--desktop">
+                {{ 'sections.modal-size-guide.measure_sub' | t }}
+                <span class="js-modal-size-guide__open-guide-desktop" data-tab-type="measure">
+                  {{ 'sections.modal-size-guide.measuring_guide' | t }}
+                </span>
+              </p>
+            </form>
+          </div>
+
+          {% comment %} Measuring Guide {% endcomment %}
+          <div class="s-modal-size-guide__content-item s-modal-size-guide__content-item--measure">
+            <div class="s-modal-size-guide__tab-measure">
+              <div class="s-modal-size-guide__measure-start">
+                <h5>
+                  {{ 'sections.modal-size-guide.measure_title' | t }}
+                </h5>
+
+                {% if video_d != blank %}
+                  <div class="s-modal-size-guide__video-wrapper s-modal-size-guide__video-wrapper--mobile">
+                    {% render 'video', video: video_d %}
+                  </div>
+                {% endif %}
+              </div>
+
+              <div class="s-modal-size-guide__measure-divider"></div>
+
+              <div class="s-modal-size-guide__measure-end">
+                {% for block in measure_guide_blocks %}
+                  {% liquid
+                    assign title = block.settings.title
+                    assign step_image = block.settings.step_image
+                    assign text = block.settings.text
+
+                    if rtl
+                      assign title = block.settings.title_ar | default: block.settings.title
+                      assign step_image = block.settings.step_image_ar | default: block.settings.step_image
+                      assign text = block.settings.text_ar | default: block.settings.text
+                    endif
+                  %}
+
+                  <div class="s-modal-size-guide__measure-block">
+                    <div class="s-modal-size-guide__measure-top">
+                      {% if step_image != blank %}
+                        {% render 'image-lazy', image: step_image %}
+                      {% endif %}
+
+                      {% if title != blank %}
+                        <h6>
+                          {{ title }}
+                        </h6>
+                      {% endif %}
+                    </div>
+
+                    {% if text != blank %}
+                      <div class="s-modal-size-guide__measure-text">
+                        {{ text }}
+                      </div>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+      {% else %}
+        <div class="s-modal-size-guide__header">
+          <h3 class="s-modal-size-guide__title">
+            {{ size_table_block.settings.page.title }}
+          </h3>
+
+          <h4 class="s-modal-size-guide__subtitle">
+            {{ 'sections.modal-size-guide.size_and_fit' | t }}
+          </h4>
+        </div>
+
+        <div class="s-modal-size-guide__tables-list">
+          {{ size_table_block.settings.page.content }}
+        </div>
+      {% endif %}
+    </div>
+  </s-modal-size-guide>
+
+  {% if size_table_block != null and size_table_block.settings.is_bra %}
+    {% assign calculation_arr = size_table_block.settings.calculations | split: ',' %}
+    <script>
+      window.SIZE_RESULT = {};
+
+      {% for item in calculation_arr %}
+        {% liquid
+          assign item_split = item | split: "="
+          assign key = item_split[0]
+          assign value = item_split[1]
+        %}
+        window.SIZE_RESULT[{{ key | strip_newlines | json }}] = "{{ value }}"{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    </script>
+  {% endif %}
+{% endif %}
+
+{% schema %}
+{
+  "name": "Modal Size Guide",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Settings"
+    }
+  ],
+  "blocks": [
+    {
+      "name": "Table Page",
+      "type": "table-page",
+      "settings": [
+        {
+          "type": "page",
+          "id": "page",
+          "label": "Page",
+          "info": "Create a page with size table and link it here. It could be more than one table in page content."
+        },
+        {
+          "type": "text",
+          "id": "product_types",
+          "label": "Product Types",
+          "info": "Write down all product types, that this size chart can be applied to. Format Example: 'Panties,Underwear' - no space, only divided by coma"
+        },
+        {
+          "type": "checkbox",
+          "id": "is_bra",
+          "label": "Bra Size Chart Layout",
+          "default": false,
+          "info": "Bra Size Chart has more complex layout and size calculator. Select this if the chosen size chart is for a Bra product"
+        },
+        {
+          "type": "header",
+          "content": "Bra Size Guide Modal Settings"
+        },
+        {
+          "type": "paragraph",
+          "content": "Underband"
+        },
+        {
+          "type": "textarea",
+          "id": "underband_cm_values",
+          "label": "Underband Values (Cm)",
+          "info": "Underband in cm = Equivalent Band - UK/US. Example: '59.7 - 62.3=28:::62.4 - 67.4=30...'"
+        },
+        {
+          "type": "textarea",
+          "id": "underband_inch_values",
+          "label": "Underband Values (Inch)",
+          "info": "Underband in inches = Equivalent Band - UK/US. Example: '23.5 - 24.5=28:::24.6 - 26.5=30...'"
+        },
+        {
+          "type": "paragraph",
+          "content": "Overbust"
+        },
+        {
+          "type": "textarea",
+          "id": "overbust_cm_values",
+          "label": "Overbust Values (Cm)",
+          "info": "Example: '70.0 - 72.5=28:::72.6 - 75=28...'"
+        },
+        {
+          "type": "textarea",
+          "id": "overbust_inch_values",
+          "label": "Overbust Values (Inch)",
+          "info": "Example: '27.6 - 28.5=28:::28.6 - 29.5=28...'"
+        },
+        {
+          "type": "header",
+          "content": "Size Guide calculations"
+        },
+        {
+          "type": "textarea",
+          "id": "calculations",
+          "label": "Size Calculations",
+          "info": "Pattern: Equivalent Band(UK/US) - Equivalent bust in inch = US Size/EUR Size"
+        },
+        {
+          "type": "text",
+          "id": "error_text",
+          "label": "Error Text",
+          "default": "Kindly review the selected Bust and Band sizes. Please check our measuring guide for more information"
+        },
+        {
+          "type": "text",
+          "id": "error_text_ar",
+          "label": "Error Text (AR)",
+          "default": "AR Kindly review the selected Bust and Band sizes. Please check our measuring guide for more information"
+        },
+        {
+          "type": "header",
+          "content": "Bra Measuring Guide Content"
+        },
+        {
+          "type": "video",
+          "id": "video_guide_m",
+          "label": "Video Guide (Mobile)",
+          "info": "Recommended size: 672x474"
+        },
+        {
+          "type": "video",
+          "id": "video_guide_m_ar",
+          "label": "Video Guide (Mobile AR)",
+          "info": "Recommended size: 672x474"
+        },
+        {
+          "type": "video",
+          "id": "video_guide_d",
+          "label": "Video Guide (Desktop)",
+          "info": "Recommended size: 1048x738"
+        },
+        {
+          "type": "video",
+          "id": "video_guide_d_ar",
+          "label": "Video Guide (Desktop AR)",
+          "info": "Recommended size: 1048x738"
+        }
+      ]
+    },
+    {
+      "name": "Measuring Guide Step",
+      "type": "measure-guide",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Step 1: Determine your band Size"
+        },
+        {
+          "type": "text",
+          "id": "title_ar",
+          "label": "Title (AR)"
+        },
+        {
+          "type": "image_picker",
+          "id": "step_image",
+          "label": "Image Step",
+          "info": "Recommended size: 268x268"
+        },
+        {
+          "type": "image_picker",
+          "id": "step_image_ar",
+          "label": "Image Step (AR)",
+          "info": "Recommended size: 268x268"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text"
+        },
+        {
+          "type": "richtext",
+          "id": "text_ar",
+          "label": "Text (AR)"
+        }
+      ]
+    }
+  ],
+  "limit": 1,
+  "enabled_on": { "groups": ["aside"] },
+  "presets": [
+    {
+      "name": "Modal Size Guide"
+    }
+  ]
+}
+{% endschema %}

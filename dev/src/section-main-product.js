@@ -176,7 +176,7 @@ if (!customElements.get("s-main-product")) {
           items: [
             {
               id: variantId,
-              quantity: this.qtyInput.value,
+              quantity: 1,
             },
           ],
         };

@@ -1,0 +1,120 @@
+body.modal-variant-picker-active {
+  overflow: hidden;
+  touch-action: none;
+  -ms-touch-action: none;
+}
+
+.s-modal-variant-picker {
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  max-width: 374px;
+  height: 100dvh;
+  transform: translateX(100%);
+  transition: transform 400ms ease;
+  pointer-events: all;
+  z-index: 13;
+
+  @media screen and (min-width: 768px) {
+    max-width: 500px;
+  }
+
+  &__overlay {
+    opacity: 0;
+    pointer-events: none;
+    position: fixed;
+    width: 200vw;
+    height: 100vh;
+    background: rgba(29, 29, 29, 0.5);
+    backdrop-filter: blur(5px);
+    top: 0;
+    right: 0;
+    z-index: -1;
+    transition: opacity 0.2s ease-in-out;
+
+    &.js-active {
+      opacity: 100%;
+      pointer-events: all;
+      cursor: url("/cdn/shop/files/close-modal.svg?v=1741346033") 58 58, auto;
+    }
+  }
+
+  &--rtl {
+    direction: rtl;
+    left: 0;
+    right: auto;
+    transform: translateX(-100%);
+
+    & .s-modal-variant-picker__overlay {
+      right: unset;
+      left: 0;
+    }
+  }
+
+  &.js-active {
+    transform: translateX(0);
+  }
+
+  &__wrapper {
+    display: block;
+    width: fit-content;
+  }
+
+  &__container {
+    height: 100%;
+  }
+
+  &__inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    background: #fff;
+    float: right;
+    width: 374px;
+    height: 100dvh;
+    overflow: hidden;
+
+    z-index: 12;
+
+    @media screen and (min-width: 768px) {
+      width: 500px;
+    }
+  }
+
+  &__closer {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 2;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+  }
+
+  &__loader {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: rgb(236 236 236 / 50%);
+    width: 100%;
+    height: 100%;
+    transition: transform 400ms ease;
+    z-index: 13;
+    opacity: 0;
+    backdrop-filter: blur(4px);
+    pointer-events: none;
+
+    &.js-loading {
+      pointer-events: all;
+      opacity: 1;
+    }
+
+    &.js-loading > * {
+      pointer-events: none;
+    }
+  }
+}

@@ -89,7 +89,7 @@
       "discounts": "Discounts",
       "gift_title": "YAAY! here is your FREE GIFT"
     },
-        "side-cart": {
+    "side-cart": {
       "free_shipping_text": "You’re {{ money }} away from free shipping.",
       "free_shipping_complete_text": "Yay! You’ve qualified for free shipping! ",
       "empty-text": "Your shopping bag is empty",
@@ -101,7 +101,26 @@
       "add_same_size": "Add Same Size",
       "added_to_cart": "Added to cart!",
       "change_size": "Change Size",
-      "add_to_save": "Add # more to save",
+      "add_to_save": "Add # more to save"
     },
+    "modal-size-guide": {
+      "title_bra": "Bras Size Guide",
+      "size_and_fit": "SIZE & FIT",
+      "find_your_fit": "FIND YOUR FIT",
+      "cm": "Centimeters",
+      "inch": "Inches",
+      "underband": "Underband",
+      "underband_placeholder": "Select Your Underband",
+      "overbust": "Overbust",
+      "overbust_placeholder": "Select Your Overbust",
+      "submit": "FIND MY SIZE",
+      "measure_sub": "Don’t know how to Measure? View Our ",
+      "measuring_guide": "Measuring Guide",
+      "measure_title": "How to measure ?",
+      "size_result_text": "Your size is"
+    },
+    "modal_variant_picker": {
+      "quantity": "Quantity"
+    }
   }
 }

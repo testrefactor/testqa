@@ -74,7 +74,8 @@
           }
         '
       >
-        {%- for product in recommendations.products limit: section.settings.product_limit -%}
+      {% assign limit_plus = section.settings.product_limit |  plus: 1 %}
+        {%- for product in recommendations.products limit: limit_plus -%}
           <swiper-slide
             class='js-recommended-products__slide'
             data-collection='{{ product.collections.first.url }}'

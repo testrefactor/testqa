@@ -1,0 +1,367 @@
+{% assign variant = product.selected_or_first_available_variant %}
+
+{% liquid
+  assign rtl = false
+
+  if localization.language.iso_code == 'ar'
+    assign rtl = true
+  endif
+
+  assign has_one_variant = false
+
+  if product.has_only_default_variant or product.variants.size == 1
+    assign has_one_variant = true
+  endif
+
+  assign options_length = 0
+
+  for option in product.options_with_values
+    if option.values.size > 1
+      assign options_length = options_length | plus: 1
+    endif
+  endfor
+
+  assign swatch_options = 'Colour,Color,اللون' | downcase | split: ','
+  assign white_colors = 'White,أبيض' | downcase | split: ','
+%}
+
+{% assign current_variant = product.selected_or_first_available_variant %}
+{% assign selected_options = product.selected_or_first_available_variant.options %}
+
+<c-variant-picker
+  class="c-variant-picker {% if rtl %}c-variant-picker--rtl{% endif %}"
+  data-product-variant-url="{{ variant.url }}"
+  data-product-variant-id="{{ variant.id }}"
+  data-product-handle="{{ product.handle }}"
+  data-item-to-remove=""
+  data-options-length="{{ options_length }}"
+  data-one-variant="{{ has_one_variant }}"
+  data-product-json="{{ product | json | escape }}"
+  data-variant-json="{{ product.selected_variant | json | escape }}"
+  data-offer-tags="{{ product.metafields.custom.tags_list.value }}"
+>
+  <div class="c-variant-picker__wrapper js-variant-picker">
+    <div class="c-variant-picker__inner">
+      <div class="c-variant-picker__gallery">
+        {% if product.images.size > 1 %}
+          <swiper-container
+            slides-per-view="1"
+            speed="500"
+            loop="false"
+            grab-cursor="true"
+            pagination="false"
+            navigation="false"
+            scrollbar="true"
+          >
+            {% for image in product.images %}
+              {% if image != blank %}
+                <swiper-slide class="c-variant-picker__image js-variant-picker__image-slide">
+                  {% render 'image-lazy', image: image %}
+                </swiper-slide>
+              {% endif %}
+            {% endfor %}
+          </swiper-container>
+        {% elsif product.featured_image != blank %}
+          <div class="c-variant-picker__image">
+            {% render 'image-lazy',
+              image: product.featured_image,
+              class: 'c-variant-picker__image--state--featured',
+              lazy: true
+            %}
+          </div>
+        {% elsif product.images[0] != blank %}
+          <div class="c-variant-picker__image">
+            {% render 'image-lazy',
+              image: product.images[0],
+              class: 'c-variant-picker__image--state--featured',
+              lazy: true
+            %}
+          </div>
+        {% endif %}
+      </div>
+      <div class="js-variant-picker__container">
+        <div class="c-variant-picker__options">
+          {% if product.metafields.custom.product_subtitle.value != blank %}
+            <h5 class="c-variant-picker__subtitle">
+              {{ product.metafields.custom.product_subtitle.value }}
+            </h5>
+          {% endif %}
+
+          <div class="c-variant-picker__title-container">
+            <h2 class="c-variant-picker__title">
+              {{- product.title -}}
+            </h2>
+            <div class="c-variant-picker__price-wrapper">
+              <div class="c-variant-picker__price-container">
+                {%- if variant.compare_at_price -%}
+                  <span class="c-variant-picker__price c-variant-picker__price--discount">
+                    <span class="c-variant-picker__price-currency">
+                      {{ shop.currency }}
+                    </span>
+                    {{ variant.price | money_without_currency | replace: '.00', '' }}
+                  </span>
+                  <span class="c-variant-picker__compare-at-price">
+                    <span class="c-variant-picker__price-currency">
+                      {{ shop.currency }}
+                    </span>
+                    {{ variant.compare_at_price | money_without_currency | replace: '.00', '' }}
+                  </span>
+                {%- else -%}
+                  <span class="c-variant-picker__price">
+                    <span class="c-variant-picker__price-currency">
+                      {{ shop.currency }}
+                    </span>
+                    {{ variant.price | money_without_currency | replace: '.00', '' }}
+                  </span>
+                {%- endif -%}
+              </div>
+            </div>
+          </div>
+
+          {% if product.metafields.custom.product_description.value != blank %}
+            <div class="c-variant-picker__info">
+              <h4 class="c-variant-picker__info-title">
+                {{ product.metafields.custom.product_description.value }}
+              </h4>
+              <span class="c-variant-picker__info-subtitle">
+                {{ product.metafields.custom.product_description_info.value }}
+              </span>
+            </div>
+          {% endif %}
+
+          {% form 'product', product, class: 'c-variant-picker__form js-variant-picker__form' %}
+            <div class="c-variant-picker__color-option-wrapper">
+              {% for product_option in product.options_with_values %}
+                {% assign option_name = product_option.name | downcase | handleize %}
+                {% if swatch_options contains option_name %}
+                  {% assign color_option_position = product_option.position | minus: 1 %}
+                  {% assign color_option_name = product.options_with_values[color_option_position].values[0] %}
+                  {% assign color_option_name_lower = color_option_name | downcase %}
+                {% endif %}
+              {% endfor %}
+
+              {% liquid
+                assign has_swatch_image = false
+                if product.options_with_values[color_option_position].values[0].swatch.image != blank
+                  assign has_swatch_image = true
+                endif
+              %}
+
+              <div class="c-variant-picker__option-name">
+                {{ 'sections.main_product.color_option_title' | t }}
+              </div>
+              <fieldset class="c-variant-picker__option-fieldset js-variant-picker__option">
+                <div class="c-variant-picker__swatch-wrapper">
+                  <label
+                    class="c-variant-picker__swatch-label {% if white_colors contains color_option_name_lower %} has-border {% endif %}"
+                    {% if has_swatch_image %}
+                      style="background-image: url('{{ product.options_with_values[color_option_position].values[0].swatch.image | img_url: 'master' }}'); background-size: 100% 100%;"
+                    {% else %}
+                      style="background-color: {{ product.options_with_values[color_option_position].values[0].swatch.color }};"
+                    {% endif %}
+                    aria-label="{{ color_option_name }}"
+                  >
+                    {% render 'icon-check' %}
+                  </label>
+                </div>
+                {% for color_variant in product.metafields.custom.color_variants.value %}
+                  {% for product_option in color_variant.options_with_values %}
+                    {% case product_option.name %}
+                      {% when 'Color' %}
+                        {% assign color_option_position = product_option.position | minus: 1 %}
+                        {% assign color_option_url = color_variant.url %}
+                        {% assign color_option_id = color_variant.id %}
+                        {% assign color_option_name = color_variant.options_with_values[color_option_position].values[0] %}
+                        {% assign color_option_name_lower = color_option_name | downcase %}
+                    {% endcase %}
+                  {% endfor %}
+
+                  {% liquid
+                    assign has_swatch_image = false
+                    if color_variant.options_with_values[color_option_position].values[0].swatch.image != blank
+                      assign has_swatch_image = true
+                    endif
+                  %}
+
+                  {% assign best_match = null %}
+                  {% for variant in color_variant.variants %}
+                    {% assign match_count = 0 %}
+                    {% assign total_options = 0 %}
+                    {% for option_name in product.options_with_values %}
+                      {% unless option_name.name == 'Color' %}
+                        {% assign total_options = total_options | plus: 1 %}
+                        {% assign selected_value = selected_options[forloop.index0] %}
+                        {% assign variant_value = variant.options[forloop.index0] %}
+                        {% if selected_value == variant_value %}
+                          {% assign match_count = match_count | plus: 1 %}
+                        {% endif %}
+                      {% endunless %}
+                    {% endfor %}
+                    {% if match_count == total_options %}
+                      {% assign best_match = variant %}
+                      {% break %}
+                    {% endif %}
+                  {% endfor %}
+                  {% assign final_variant = best_match | default: color_variant.selected_or_first_available_variant %}
+                  <div class="c-variant-picker__swatch-wrapper">
+                    <input
+                      type="radio"
+                      class="c-variant-picker__option-input js-variant-picker__color-option-input"
+                      id="variant-picker-color-{{ color_option_id }}"
+                      name="variant-picker-color-{{ product.id }}"
+                      value="{{- color_option_url -}}?variant={{- final_variant.id -}}"
+                      data-media-length="{{ color_variant.images | size }}"
+                      data-product-handle="{{ color_variant.handle }}"
+                      data-product-variant-id="{{ final_variant.id }}"
+                      hidden
+                    >
+                    <label
+                      for="variant-picker-color-{{ color_option_id }}"
+                      class="c-variant-picker__swatch-label  {% if white_colors contains color_option_name_lower %} has-border {% endif %}"
+                      {% if has_swatch_image %}
+                        style="background-image: url('{{ color_variant.options_with_values[color_option_position].values[0].swatch.image | img_url: 'master' }}'); background-size: 100% 100%;"
+                      {% else %}
+                        style="background-color: {{ color_variant.options_with_values[color_option_position].values[0].swatch.color }};"
+                      {% endif %}
+                      aria-label="{{ color_option_name }}"
+                    >
+                    </label>
+                  </div>
+                {% endfor %}
+              </fieldset>
+            </div>
+
+            <div class="c-variant-picker__variants-wrapper">
+              {% liquid
+                assign options_length = 0
+                for option in product.options_with_values
+                  unless option.values.size == 1
+                    assign options_length = options_length | plus: 1
+                  endunless
+                endfor
+              %}
+              {% for option in product.options_with_values %}
+                {% liquid
+                  assign option_name = option.name | downcase | handleize
+                %}
+                {% unless swatch_options contains option_name or option.values[0] contains 'Default Title' %}
+                  <div class="c-variant-picker__option-wrapper">
+                    <div class="c-variant-picker__option-name">{{ option.name }}</div>
+                    <fieldset class="c-variant-picker__option js-variant-picker__option">
+                      <details class="c-variant-picker__select">
+                        <summary class="c-variant-picker__select-button">
+                          {% assign option_position_in_arr = option.position | minus: 1 %}
+                          <input
+                            class="c-variant-picker__select-input checked"
+                            type="radio"
+                            name="{{ option.name }}--item-size"
+                            id="{{ option.name }}--default-size"
+                            title="{% if product.selected_variant != blank or product.variants.size == 1 %}{{ current_variant.options[option_position_in_arr] }}{% else %}{{ 'sections.main_product.select' | t }} {{ option.name }}{% endif %}"
+                            value="{% if product.selected_variant != blank or product.variants.size == 1 %}{{ current_variant.options[option_position_in_arr] }}{% else %}{{ 'sections.main_product.select' | t }} {{ option.name }}{% endif %}"
+                            data-option-position="{{ option.position }}"
+                            checked
+                          >
+                          <span class="c-variant-picker__select-button-icon">
+                            {% render 'icon-arrow-down' %}
+                          </span>
+                        </summary>
+                        <ul class="c-variant-picker__select-list">
+                          {% for value in option.values %}
+                            {% unless value == 'Default Title' %}
+                              <li class="c-variant-picker__select-list-item">
+                                <label
+                                  for="{{ option.name }}-{{ value.variant.id }}"
+                                  class="c-variant-picker__select-list-item-label js-variant-picker__option-value {% if no_disable %}no-disable{% endif %}"
+                                  title="{{ value }}"
+                                  data-value="{{ value }}"
+                                  data-option-position="{{ option.position }}"
+                                >
+                                  {{ value }}
+                                  <span></span>
+                                  {% render 'icon-check' %}
+                                </label>
+                              </li>
+                            {% endunless %}
+                          {% endfor %}
+                        </ul>
+                      </details>
+                    </fieldset>
+                  </div>
+                {% endunless %}
+              {% endfor %}
+            </div>
+
+            <button type="button" class="c-variant-picker__size-guide js-variant-picker__size-guide">
+              {{ 'sections.main_product.size_guide_button_text' | t }}
+            </button>
+
+            {% liquid
+              assign is_allowed_add_to_cart = true  # Примусово дозволяємо додавання до кошика
+              assign max_quantity = 10  # Обмеження кількості (можна прибрати для необмеженого введення)
+            %}
+
+            {% comment %} Qty {% endcomment %}
+            <div class="c-variant-picker__option-name">{{ 'sections.modal_variant_picker.quantity' | t }}</div>
+            <div class="c-variant-picker__qty-wrapper">
+              <button
+                type="button"
+                class="c-variant-picker__qty-button js-variant-picker__qty-button-minus"
+              >
+                {% render 'icon-qty-minus' %}
+              </button>
+              <input
+                type="number"
+                name="product-qty"
+                id="product-qty"
+                class="c-variant-picker__qty-input js-variant-picker__qty-input"
+                min="1"
+                max="{{ max_quantity }}"
+                value="1"
+              >
+              <button
+                type="button"
+                class="c-variant-picker__qty-button js-variant-picker__qty-button-plus"
+              >
+                {% render 'icon-qty-plus' %}
+              </button>
+            </div>
+
+            {% comment %} Available {% endcomment %}
+            <span class="c-variant-picker__available-text">
+              {% if variant.available %}
+                {% if settings.show_left_in_stock and variant.inventory_quantity < settings.left_in_stock_limit %}
+                  {{ 'sections.main_product.available_text' | t: inventory_quantity: variant.inventory_quantity }}
+                {% endif %}
+              {% else %}
+                {{ 'sections.main_product.out_of_stock_text' | t }}
+              {% endif %}
+            </span>
+          {% endform %}
+        </div>
+      </div>
+    </div>
+
+    {% comment %} Footer {% endcomment %}
+    <div class="c-variant-picker__footer js-variant-picker__footer">
+      <button class="c-variant-picker__arrow-back js-variant-picker__close-modal">{% render 'icon-arrow-3' %}</button>
+      <button
+        type="submit"
+        class="c-variant-picker__form-submit-button js-variant-picker__form-submit-button {% unless product.variants.size == 1 or product.selected_variant != blank %}select{% endunless %}"
+      >
+        <span class="c-variant-picker__form-submit-button--add">
+          {{ 'sections.main_product.form_submit_button_text' | t }}
+        </span>
+        <span class="c-variant-picker__form-submit-button--not-available" style="display: none;">
+          {{- 'sections.main_product.not_available' | t -}}
+        </span>
+        <span class="c-variant-picker__form-submit-button--select" style="display: none;">
+          {{- 'sections.main_product.select_sizes' | t -}}
+        </span>
+      </button>
+      <button class="c-variant-picker__wishlist-button">
+        {% render 'icon-wishlist' %}
+      </button>
+    </div>
+  </div>
+  <div class="c-variant-picker__loader js-variant-picker__loader"></div>
+</c-variant-picker>

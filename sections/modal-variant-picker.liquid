@@ -1,0 +1,61 @@
+{{ 'section-modal-variant-picker.css' | asset_url | stylesheet_tag }}
+{{ 'component-variant-picker.css' | asset_url | stylesheet_tag }}
+
+<script src="{{ 'section-modal-variant-picker.js' | asset_url }}" defer></script>
+<script src="{{ 'component-variant-picker.js' | asset_url }}" defer></script>
+
+{% style %}
+  #shopify-section-{{ section.id }} {
+    width: 100%;
+    height: 100dvh;
+    pointer-events: none;
+    background: transparent;
+    overflow-x: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 14;
+    transition: background 400ms ease;
+  }
+{% endstyle %}
+
+{% liquid
+  assign rtl = false
+
+  if localization.language.iso_code == 'ar'
+    assign rtl = true
+  endif
+
+  assign variant = product.selected_or_first_available_variant
+  assign product = variant.product
+%}
+
+<s-modal-variant-picker
+  class="s-modal-variant-picker s-modal-variant-picker {% if rtl %}s-modal-variant-picker--rtl{% endif %}"
+  data-section-id="shopify-section-{{ section.id }}"
+  data-id="{{ section.id }}"
+>
+  <div class="s-modal-variant-picker__overlay js-modal-variant-picker__overlay"></div>
+  <div class="s-modal-variant-picker__wrapper">
+    <div class="s-modal-variant-picker__inner">
+      <div class="s-modal-variant-picker__closer js-modal-variant-picker__closer">{% render 'icon-close' %}</div>
+      <div class="s-modal-variant-picker__container js-modal-variant-picker__container">
+      </div>
+    </div>
+    <div class="s-modal-variant-picker__loader js-modal-variant-picker__loader"></div>
+  </div>
+</s-modal-variant-picker>
+
+{% schema %}
+{
+  "name": "Modal Variant Picker",
+  "settings": [],
+  "limit": 1,
+  "enabled_on": { "groups": ["aside"] },
+  "presets": [
+    {
+      "name": "Modal Variant Picker"
+    }
+  ]
+}
+{% endschema %}
