@@ -11,7 +11,26 @@
   "name": "Header group",
   "type": "header",
   "sections": {
+    "header_8tm7bN": {
+      "type": "header",
+      "name": "Header",
+      "settings": {
+        "padding_top_desktop": 0,
+        "padding_bottom_desktop": 0,
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 0,
+        "mega_menu_links": "",
+        "titles_as_links": true,
+        "logo_full": "",
+        "logo_monogram": "",
+        "button_text_color_tansparent": "#1D1D1D",
+        "button_text_color_regular": "#F4C3CC",
+        "button_bg_color_transparent": "#F9F8F8",
+        "button_bg_color_regular": "#1D1D1D"
+      }
+    }
   },
   "order": [
+    "header_8tm7bN"
   ]
 }

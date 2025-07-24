@@ -11,7 +11,22 @@
   "name": "Modals group",
   "type": "aside",
   "sections": {
+    "side_cart_QtDNge": {
+      "type": "side-cart",
+      "name": "Side Cart",
+      "settings": {
+        "header_title": "Placeholder",
+        "header_title_ar": "Placeholder",
+        "empty_text": "Your shopping bag is empty",
+        "empty_text_ar": "Your shopping bag is empty",
+        "empty_title": "Discover & Join The Very Best",
+        "empty_title_ar": "Discover & Join The Very Best",
+        "empty_cta": "Join Amirah Club",
+        "empty_cta_ar": "Join Amirah Club"
+      }
+    }
   },
   "order": [
+    "side_cart_QtDNge"
   ]
 }
