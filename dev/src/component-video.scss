@@ -1,0 +1,123 @@
+.c-video {
+  display: block;
+  cursor: pointer;
+
+  &__inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+
+    @media screen and (min-width: 768px) {
+      &:hover {
+        & .c-video__video-button {
+          opacity: 1;
+        }
+      }
+    }
+
+    & video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+  }
+
+  &__video-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px !important;
+    height: 32px;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+
+    border-radius: 100%;
+    background: #F9F8F84D;
+    opacity: 0;
+    transition: opacity 0.25s ease-out, background-color 40ms, color 40ms;
+
+    & svg {
+      width: 14px;
+      height: 20px;
+    }
+
+    @media screen and (min-width: 768px) {
+      &:hover {
+        background: #F9F8F84D;
+
+        & .c-video__video-button-tooltip {
+          opacity: 1;
+        }
+      }
+    }
+
+    & svg path {
+      fill: #ffffff;
+      transition: fill 40ms;
+    }
+
+    &[data-show='true'] {
+      opacity: 1;
+
+      & .c-video__video-button-progress {
+        opacity: 0;
+      }
+    }
+
+    &[data-pause='true'] {
+      & svg:first-child {
+        display: block;
+      }
+
+      & svg:last-child {
+        display: none;
+      }
+
+      & .c-video__tooltip-text--play {
+        display: block;
+      }
+
+      & .c-video__tooltip-text--pause {
+        display: none;
+      }
+    }
+
+    &[data-pause='false'] {
+      & svg:first-child {
+        display: none;
+      }
+
+      & svg:last-child {
+        display: block;
+      }
+
+      & .c-video__tooltip-text--play {
+        display: none;
+      }
+
+      & .c-video__tooltip-text--pause {
+        display: block;
+      }
+    }
+
+    &.hide-buttons {
+      visibility: hidden;
+      pointer-events: none;
+    }
+  }
+
+  &__video-button-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+  }
+}

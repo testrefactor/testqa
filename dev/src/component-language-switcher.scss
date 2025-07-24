@@ -1,0 +1,123 @@
+.c-language-switcher {
+  display: block;
+
+  &--rtl {
+    & .c-language-switcher__item {
+      @media screen and (min-width: 1000px) {
+        &:first-child {
+          border-left: none;
+          border-right: 1px solid rgba(29, 29, 29, 0.25);
+        }
+      }
+    }
+  }
+
+  &__list {
+    @media screen and (min-width: 1000px) {
+      display: flex;
+      flex-direction: row-reverse;
+      height: 30px;
+      overflow: hidden;
+      border-radius: 16px;
+      border: 1px solid rgba(29, 29, 29, 0.25);
+    }
+  }
+
+  &__item {
+
+    @media screen and (min-width: 1000px) {
+      transition: all 0.3s ease;
+      &:first-child {
+        border-left: 1px solid rgba(29, 29, 29, 0.25);
+        padding-inline-end: 8px;
+      }
+      &:not(:first-child) {
+        padding-inline-start: 8px;
+      }
+    }
+
+    &.hide-mobile {
+      display: none;
+
+      @media screen and (min-width: 1000px) {
+        display: block;
+      }
+    }
+  }
+
+  &__input {
+    display: none;
+  }
+
+  &__label {
+    cursor: pointer;
+    color: #c3324c;
+    font-family: var(--font-abz);
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+
+    @media screen and (min-width: 1000px) {
+      padding: 8px;
+      display: block;
+      height: 100%;
+      color: #1d1d1d;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 75%;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    &--ar {
+      font-weight: 400;
+    }
+
+    &-desktop {
+      display: none;
+
+      @media screen and (min-width: 1000px) {
+        display: block;
+      }
+    }
+
+    &-mobile {
+      display: block;
+
+      @media screen and (min-width: 1000px) {
+        display: none;
+      }
+    }
+  }
+}
+
+.s-header--homepage {
+  .c-language-switcher__list {
+    border-color: rgba(249, 248, 248, 0.25);
+  }
+
+  .c-language-switcher__item:first-child {
+    border-color: rgba(249, 248, 248, 0.25);
+  }
+
+  .c-language-switcher__label {
+    color: #f9f8f8;
+  }
+
+  &.bg-filled {
+    .c-language-switcher__list {
+      border-color: rgba(29, 29, 29, 0.25);
+    }
+
+    .c-language-switcher__item:first-child {
+      border-color: rgba(29, 29, 29, 0.25);
+    }
+
+    .c-language-switcher__label {
+      color: #1d1d1d;
+    }
+  }
+}

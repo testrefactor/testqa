@@ -1,0 +1,30 @@
+{% comment %}
+  Wishlist remove button
+
+  Styles: component-wishlist-remove-button.css
+  Scripts: component-wishlist-remove-button.js
+
+  Accepts:
+    product: Object - required
+    item_to_delete: string (class) - required
+    variant_id: number - optional (rewrite variant id from product)
+    class: string - optional
+{% endcomment %}
+
+{% assign epi = '' %}
+
+{% if variant_id %}
+  {% assign epi = variant_id %}
+{% else %}
+  {% if product.selected_variant.id %}
+    {% assign epi = product.selected_variant.id %}
+  {% else %}
+    {% assign epi = product.variants[0].id %}
+  {% endif %}
+{% endif %}
+
+<div class="wishlist-remove-button {{ class }}" data-epi="{{ epi }}" data-empi="{{ product.id }}" data-du="https://{{ shop.domain }}{{ product.url }}" data-item-to-delete="{{ item_to_delete }}">
+  <button type="button" class="wishlist-remove-button__button js-wishlist-remove-button__button" data-action="delete">
+    <span>{% render 'icon-close-thick' %}</span>
+  </button>
+</div>

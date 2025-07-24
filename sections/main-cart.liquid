@@ -1,0 +1,537 @@
+{{ 'section-main-cart.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'section-main-cart.js' |  asset_url }}" defer></script>
+{% if section.settings.show_tabby and settings.tabby_public_api != blank and settings.tabby_merchant_code != blank %}
+  <script src="https://checkout.tabby.ai/tabby-promo.js"></script>
+{% endif %}
+
+{% style %}
+  #shopify-section-{{ section.id }}.main-cart {
+    padding-top: {{ section.settings.section_top_padding_mobile }}px;
+    padding-bottom: {{ section.settings.section_bottom_padding_mobile }}px;
+    background-color: {{ section.settings.section_bg_color }};
+  }
+
+  @media screen and (min-width: 1200px) {
+    #shopify-section-{{ section.id }}.main-cart {
+      padding-top: {{ section.settings.section_top_padding }}px;
+      padding-bottom: {{ section.settings.section_bottom_padding }}px;
+    }
+  }
+{% endstyle %}
+
+{% liquid
+  assign rtl = false
+
+  if localization.language.iso_code == 'ar'
+    assign rtl = true
+  endif
+
+  assign free_gift_available = false
+  assign payment_icons = section.blocks | where: 'type', 'payment-icon'
+  assign title = section.settings.header_title
+  assign empty_title = section.settings.empty_title
+  assign empty_text = section.settings.empty_text
+  assign empty_cta = section.settings.empty_cta
+
+  if rtl
+    assign title = section.settings.header_title_ar | default: title
+    assign empty_title = section.settings.empty_title_ar | default: empty_title
+    assign empty_text = section.settings.empty_text_ar | default: empty_text
+    assign empty_cta = section.settings.empty_cta_ar | default: empty_cta
+  endif
+
+  for item in cart.items
+    if item.product.tags contains 'gwp_free'
+      assign free_gift_available = true
+      break
+    endif
+  endfor
+%}
+
+<s-main-cart
+  class="s-main-cart {% if rtl %}s-main-cart--rtl{% endif %}"
+  data-item-count="{{ cart.item_count }}"
+  data-section-id="{{ section.id }}"
+  data-cart-json="{{ cart | json | escape }}"
+>
+  <div class="s-main-cart__top">
+    <h1 class="s-main-cart__title">{{ title }}</h1>
+    <button onclick="history.back()" class="s-main-cart__back">
+      {% render 'icon-arrow-3' %}
+      {{ 'sections.main_cart.continue_shopping' | t }}
+    </button>
+  </div>
+  <div class="s-main-cart__container js-main-cart__container">
+    <div class="s-main-cart__loader js-main-cart__loader"></div>
+    <span class="s-main-cart__counter js-cart-counter">
+      {{- 'sections.main_cart.items' | t }} ({{ cart.item_count }})</span
+    >
+    <div class="s-main-cart__content-wrapper">
+      <div class="s-main-cart__line-items-wrapper js-main-cart__line-items-wrapper">
+        {% if cart.empty? %}
+          <div class="s-main-cart__empty-wrapper">
+            <p class="s-main-cart__empty-text">
+              {{ empty_text }}
+            </p>
+            <div class="s-main-cart__empty-placeholder">
+              <h2>{{ empty_title }}</h2>
+              <a href="{{ routes.root_url }}{% if rtl %}/{% endif %}account/register">
+                {{- empty_cta }}
+                {% render 'icon-arrow-3' -%}
+              </a>
+            </div>
+          </div>
+        {% else %}
+          {% for item in cart.items %}
+            {% unless item.product.tags contains 'package' or item.product.tags contains 'gwp_free' %}
+              {% assign product = item.product %}
+              {% assign variant = item.variant %}
+
+              <div 
+                class="s-main-cart__item js-main-cart__item" 
+                data-variant-id="{{ variant.id }}"
+                data-item-name="{{ item.title }}"
+                data-brand="{{ item.vendor }}"
+                data-type="{{ product.type }}"
+                data-price="{{ item.final_line_price | money }}"
+              >
+                <div class="s-main-cart__item-image">
+                  <a href="{{ item.url }}">
+                    {% if item.image != blank %}
+                      {% render 'image-lazy', image: item.image %}
+                    {% endif %}
+                  </a>
+                  {% unless product.tags contains 'gift-card' %}
+                    {% comment %}
+                      Wishlist
+                    {% endcomment %}
+                  {% endunless %}
+                </div>
+
+                <div class="s-main-cart__item-content">
+                  <div class="s-main-cart__item-content-top">
+                    <a href="{{ product.url }}" class="s-main-cart__item-title">
+                      {{ product.title }}
+                    </a>
+                    <div class="s-main-cart__item-price {% if variant.compare_at_price != blank %}s-main-cart__item-price--red{% endif %}">
+                      <span class="s-main-cart__item-price--currency">{{ shop.currency }}</span>
+                      <span>{{ item.final_line_price | money_without_currency  }}</span>
+                    </div>
+                  </div>
+                  <div class="s-main-cart__item-content-top">
+                    <div class="s-main-cart__item-subtitle">
+                      {% if product.metafields.custom.product_description.value != blank %}
+                        {{ product.metafields.custom.product_description.value }}
+                      {% endif %}
+                    </div>
+                    {% if variant.compare_at_price != blank %}
+                      <div class="s-main-cart__item-price--discount">
+                        <span class="s-main-cart__item-price--currency">{{ shop.currency }}</span>
+                        <span>
+                          {{- variant.compare_at_price | money_without_currency  | times: item.quantity -}}
+                        </span>
+                      </div>
+                    {% endif %}
+                  </div>
+                  <div class="s-main-cart__item-options">
+                    <span class="s-main-cart__item-options--text">
+                      {{ item.variant_options | join: ',' }}
+                      {% for option in item.options_with_values %}
+                        {% if forloop.last %}
+                          {{ option.name }}
+                          {{ option.value }}
+                        {% else %}
+                          {{ option.name }}
+                          {{ option.value | append: ', ' }}
+                        {% endif %}
+                      {% endfor %}
+                    </span>
+                    <button
+                      class="s-main-cart__item-options--button js-main-cart__open-variant-picker"
+                      data-product-handle="{{ product.handle }}"
+                      data-variant-id="{{ variant.id }}"
+                      data-item-id="{{ item.id }}"
+                    >
+                      {{ 'sections.main_cart.edit' | t }}
+                    </button>
+                  </div>
+                  <div class="s-main-cart__item-bottom">
+                    <div class="s-main-cart__item-qty-wrapper">
+                      <button
+                        class="s-main-cart__item-button-delete js-main-cart__item-button-delete"
+                        data-item-id="{{ item.id }}"
+                      >
+                        {% render 'icon-trash' %}
+                      </button>
+
+                      {% liquid
+                        assign line_item_limit = item.variant.inventory_quantity
+
+                        if item.product.tags contains 'pre-order'
+                          assign line_item_limit = settings.quantity_limit
+
+                          if item.variant.inventory_quantity > 0
+                            assign line_item_limit = item.variant.inventory_quantity
+                          endif
+                        endif
+                      %}
+
+                      <div class="s-main-cart__item-quantity js-main-cart__item-quantity s-main-cart__item-input-wrapper">
+                        <div class="s-main-cart__form-qty-wrapper">
+                          <button
+                            type="button"
+                            class="s-main-cart__form-qty-button {% if item.quantity == 1 %}s-main-cart__form-qty-button--disabled{% endif %} js-main-cart__form-qty-button--minus"
+                          >
+                            {% render 'icon-qty-minus' %}
+                          </button>
+                          <input
+                            class="s-main-cart__form-qty-input js-main-cart__form-qty-input"
+                            type="number"
+                            name="quantity"
+                            min="1"
+                            step="1"
+                            max="{{ line_item_limit }}"
+                            value="{{ item.quantity }}"
+                          >
+                          <button
+                            type="button"
+                            class="s-main-cart__form-qty-button js-main-cart__form-qty-button--plus {% if line_item_limit <= 1 or item.quantity >= line_item_limit -%} s-main-cart__form-qty-button--disabled {% endif %}"
+                          >
+                            {% render 'icon-qty-plus' %}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {% assign multibuys_offers = item.product.metafields.custom.offer_pills.value %}
+
+                    {% liquid
+                      assign product_offers_tag = ''
+                      for tag in product.metafields.custom.tags_list.value
+                        assign product_offers_tag = tag | split: ',' | first
+                      endfor
+                    %}
+
+                    {% if multibuys_offers and multibuys_offers != blank %}
+                      <button
+                        class="s-main-cart__item-content--offers js-main-cart__open-offers"
+                        data-product-handle="{{ item.product.handle }}"
+                        data-variant-id="{{ item.variant.id }}"
+                        data-offer-tag="{{ product_offers_tag | handleize }}"
+                        data-offer-title="{{ product_offers_tag }}"
+                      >
+                        {% for offer in multibuys_offers %}
+                          {% if forloop.first %}
+                            {{ offer.title }}
+                            {% render 'icon-arrow-2' %}
+                          {% endif %}
+                        {% endfor %}
+                      </button>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            {% endunless %}
+          {% endfor %}
+        {% endif %}
+        {% comment %}
+          for future functionality
+        {% endcomment %}
+
+        {% if free_gift_available %}
+          <div class="s-main-cart__gift">
+            <div class="s-main-cart__gift-heading">
+              <span class="s-main-cart__gift-title">{{ 'sections.main_cart.gift_title' | t }}</span>
+            </div>
+            <div class="s-main-cart__gift-list">
+              {% for item in cart.items %}
+                {% assign product = item.product %}
+                {% assign variant = item.variant %}
+                {% if product.tags contains 'gwp_free' %}
+                  <div class="s-main-cart__item js-main-cart__item" data-variant-id="{{ variant.id }}">
+                    <div class="s-main-cart__item-image">
+                      <a href="{{ item.url }}">
+                        {% if item.image != blank %}
+                          {% render 'image-lazy', image: item.image %}
+                        {% endif %}
+                      </a>
+                      {% unless product.tags contains 'gift-card' %}
+                        {% comment %}
+                          Wishlist
+                        {% endcomment %}
+                      {% endunless %}
+                    </div>
+
+                    <div class="s-main-cart__item-content">
+                      <div class="s-main-cart__item-content-top">
+                        <a href="{{ product.url }}" class="s-main-cart__item-title">
+                          {{ product.title }}
+                        </a>
+                        <div class="s-main-cart__item-price {% if variant.compare_at_price != blank %}s-main-cart__item-price--red{% endif %}">
+                          <span class="s-main-cart__item-price--currency">{{ shop.currency }}</span>
+                          <span>{{ item.final_line_price | money_without_currency  }}</span>
+                        </div>
+                      </div>
+                      <div class="s-main-cart__item-content-top">
+                        <div class="s-main-cart__item-subtitle">
+                          {% if product.metafields.custom.product_description.value != blank %}
+                            {{ product.metafields.custom.product_description.value }}
+                          {% endif %}
+                        </div>
+                        {% if variant.compare_at_price != blank %}
+                          <div class="s-main-cart__item-price--discount">
+                            <span class="s-main-cart__item-price--currency">{{ shop.currency }}</span>
+                            <span>
+                              {{- variant.compare_at_price | money_without_currency  | times: item.quantity -}}
+                            </span>
+                          </div>
+                        {% endif %}
+                      </div>
+                      <div class="s-main-cart__item-options">
+                        <span class="s-main-cart__item-options--text">
+                          {{ item.variant_options | join: ',' }}
+                          {% for option in item.options_with_values %}
+                            {% if forloop.last %}
+                              {{ option.name }}
+                              {{ option.value }}
+                            {% else %}
+                              {{ option.name }}
+                              {{ option.value | append: ', ' }}
+                            {% endif %}
+                          {% endfor %}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+      <div class="s-main-cart__summary">
+        <div class="s-main-cart__summary-title">{{ 'sections.main_cart.summary_title' | t }}</div>
+
+        <div class="s-main-cart__summary-row">
+          <div class="s-main-cart__summary-subtitle s-main-cart__summary-subtitle--bold">
+            {{ 'sections.main_cart.subtotal' | t }}
+          </div>
+          <div class="s-main-cart__summary-value js-summary-subtotal">
+            <span>{{ shop.currency }}</span>
+            <span>{{ cart.original_total_price | money_without_currency  }}</span>
+          </div>
+        </div>
+
+        {% assign discount_amount = cart.original_total_price | minus: cart.total_price | money_without_currency | round %}
+
+        {% if discount_amount > 0 %}
+          <div class="s-main-cart__summary-row">
+            <div class="s-main-cart__summary-subtitle s-main-cart__summary-subtitle--bold s-main-cart__summary-subtitle--red">
+              {{ 'sections.main_cart.discounts' | t }}
+            </div>
+            <div class="s-main-cart__summary-value s-main-cart__summary-value--bold s-main-cart__summary-value--red">
+              -{{ shop.currency }}
+              {{ discount_amount }}
+            </div>
+          </div>
+        {% endif %}
+
+        <div class="s-main-cart__summary-row s-main-cart__summary-row--total">
+          <div class="s-main-cart__summary-subtitle">{{ 'sections.main_cart.total' | t }}</div>
+          <div class="s-main-cart__summary-value js-summary-total">
+            <span>{{ shop.currency }}</span>
+            <span>{{ cart.total_price | money_without_currency }}</span>
+          </div>
+        </div>
+
+        <div class="s-main-cart__summary-info">
+          {{ 'sections.main_cart.summary_info' | t }}
+        </div>
+
+        {% comment %} Tabby {% endcomment %}
+        {% if section.settings.show_tabby and settings.tabby_public_api != blank and settings.tabby_merchant_code != blank %}
+          <div
+            id="TabbyPromo"
+            class="s-main-cart__tabby js-main-cart__tabby"
+            data-currency="{{ shop.currency }}"
+            data-price="{{ cart.total_price | money_without_currency }}"
+            data-lang="{{ request.locale.iso_code }}"
+            data-source="Cart"
+            data-public-key="{{ settings.tabby_public_api }}"
+            data-merchant-code="{{ settings.tabby_merchant_code }}"
+          ></div>
+        {% endif %}
+
+        <a
+          class="s-main-cart__summary-cta js-main-cart__cta {% if cart.empty? %}s-main-cart__summary-cta--disabled{% endif %}"
+          href="{% if customer %}{{ shop.url }}{{ routes.root_url }}/checkout{% else %}{{ routes.account_login_url }}{% endif %}"
+        >
+          {{- 'sections.main_cart.checkout_cta' | t -}}
+        </a>
+
+        <div class="s-main-cart__summary-payment-icons">
+          {% for block in payment_icons %}
+            {% liquid
+              assign icon = block.settings.icon
+              if rtl
+                assign icon = block.settings.ar_icon | default: icon
+              endif
+            %}
+
+            {% if icon != blank %}
+              <div class="s-main-cart__icon">
+                {% render 'image-lazy', image: icon %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</s-main-cart>
+
+{% schema %}
+{
+  "name": "Main Cart",
+  "class": "main-cart",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Spacing settings"
+    },
+    {
+      "id": "section_top_padding",
+      "label": "Top Space",
+      "type": "range",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "id": "section_bottom_padding",
+      "label": "Bottom Space",
+      "type": "range",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "id": "section_top_padding_mobile",
+      "label": "Top Space (Mobile)",
+      "type": "range",
+      "min": 0,
+      "max": 90,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "id": "section_bottom_padding_mobile",
+      "label": "Bottom Space (Mobile)",
+      "type": "range",
+      "min": 0,
+      "max": 90,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Color settings"
+    },
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Section Background Color",
+      "default": "#fff"
+    },
+    {
+      "type": "header",
+      "content": "Content settings"
+    },
+    {
+      "type": "text",
+      "id": "header_title",
+      "label": "Title",
+      "default": "Shopping bag"
+    },
+    {
+      "type": "text",
+      "id": "header_title_ar",
+      "label": "Title (AR)",
+      "default": "Shopping bag"
+    },
+    {
+      "type": "text",
+      "id": "empty_text",
+      "label": "Empty text",
+      "default": "Your shopping bag is empty"
+    },
+    {
+      "type": "text",
+      "id": "empty_text_ar",
+      "label": "Empty text (AR)",
+      "default": "Your shopping bag is empty"
+    },
+    {
+      "type": "text",
+      "id": "empty_title",
+      "label": "Empty title",
+      "default": "Discover & Join The Very Best"
+    },
+    {
+      "type": "text",
+      "id": "empty_title_ar",
+      "label": "Empty title (AR)",
+      "default": "Discover & Join The Very Best"
+    },
+    {
+      "type": "text",
+      "id": "empty_cta",
+      "label": "Empty cta text",
+      "default": "Join Amirah Club"
+    },
+    {
+      "type": "text",
+      "id": "empty_cta_ar",
+      "label": "Empty cta text (AR)",
+      "default": "Join Amirah Club"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tabby",
+      "label": "Show Tabby Info",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "payment-icon",
+      "name": "Payment icon",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Icon"
+        },
+        {
+          "type": "image_picker",
+          "id": "ar_icon",
+          "label": "Icon (Ar)"
+        }
+      ]
+    }
+  ],
+  "enabled_on": { "templates": ["cart"] },
+  "limit": 1,
+  "presets": [
+    {
+      "name": "Main Cart"
+    }
+  ]
+}
+{% endschema %}

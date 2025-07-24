@@ -7,6 +7,92 @@
       "external": "Opens external website."
     }
   },
-  "components": {},
-  "sections": {}
+  "components": {
+    "breadcrumbs": {
+      "home-text": "Home"
+    },
+    "pdp_accordion": {
+      "description_tab_title": "Description",
+      "care_guide_tab_title": "Care Guide",
+      "delivery_tab_title": "Delivery"
+    },
+    "product_gallery_zoom": {
+      "title": "Zoom"
+    },
+    "product_card": {
+      "quick_buy": "Quick buy",
+      "select_sizes": "Select sizes",
+      "add_to_bag": "Add to bag",
+      "out_of_stock": "Out of Stock",
+      "was": "was",
+      "pre_order": "Pre-order",
+      "notify_me": "Notify Me",
+      "not_available": "Not Available"
+    },
+    "language_switcher": {
+      "language_switcher_ar": "العربية",
+      "language_switcher_en": "en"
+    }
+  },
+  "sections": {
+    "main_product": {
+      "color_option_title": "Color",
+      "size_guide_button_text": "Size Guide",
+      "wholesale_price_text": "{{ number }} for {{ currency }}{{ money }}",
+      "form_submit_button_text": "Add to bag",
+      "out_of_stock_text": "Out of stock",
+      "available_text": "Only {{ inventory_quantity }} in Stock",
+      "delivery_title": "Free delivery over SAR 399",
+      "delivery_text": "Estimated delivery between 20th -25th of January",
+      "shop_the_look_title": "Shop the look",
+      "multibuys_closed_desktop": "MORE OFFERS +",
+      "multibuys_open_desktop": "Less offers -",
+      "multibuys_closed_mobile": "MORE +",
+      "multibuys_open_mobile": "Less -",
+      "not_available": "Not available",
+      "select_sizes": "Select sizes",
+      "select": "Select "
+    },
+    "product_info": {
+      "description_tab_title": "Description",
+      "care_guide_tab_title": "Care Guide",
+      "delivery_tab_title": "Delivery"
+    },
+    "recommended_products": {
+      "recommended_title": "YOU MAY ALSO LIKE",
+      "shop_all": "Shop All"
+    },
+    "header": {
+      "shop": "Shop",
+      "search": "Search"
+    },
+    "main_cart": {
+      "continue_shopping": "Continue Shopping",
+      "edit": "Edit",
+      "items": "Items",
+      "summary_title": "Order Summary",
+      "subtotal": "Subtotal",
+      "shipping": "Shipping",
+      "shipping_value": "*Calculated at checkout",
+      "total": "Total",
+      "summary_info": "More info about Shipping, taxes and duties at checkout.",
+      "checkout_cta": "Checkout Now",
+      "discounts": "Discounts",
+      "gift_title": "YAAY! here is your FREE GIFT"
+    },
+        "side-cart": {
+      "free_shipping_text": "You’re {{ money }} away from free shipping.",
+      "free_shipping_complete_text": "Yay! You’ve qualified for free shipping! ",
+      "empty-text": "Your shopping bag is empty",
+      "total": "Total",
+      "checkout": "Checkout Now",
+      "continue-shopping": "Continue Shopping",
+      "last_item": "{{ number }} left only",
+      "select_size": "Select size",
+      "add_same_size": "Add Same Size",
+      "added_to_cart": "Added to cart!",
+      "change_size": "Change Size",
+      "add_to_save": "Add # more to save",
+    },
+  }
 }

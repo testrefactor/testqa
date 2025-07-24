@@ -1,0 +1,254 @@
+.c-product-gallery-zoom {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  visibility: hidden;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: #fff;
+  z-index: 12;
+
+  &::before {
+    content: "";
+    width: 100%;
+    height: 80px;
+    background: #fff;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 9;
+  }
+
+  &--rtl {
+    direction: rtl;
+  }
+
+  &.js-active {
+    visibility: visible;
+    display: flex;
+  }
+
+  &__wrapper {
+    width: 100%;
+    height: 100%;
+  }
+
+  &__closer {
+    padding: 10px;
+
+    aspect-ratio: 1/1;
+    position: absolute;
+    top: 17px;
+    right: 14px;
+    z-index: 11;
+
+    background: none;
+    color: inherit;
+    border: none;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+
+    .c-product-gallery-zoom--rtl & {
+      left: 14px;
+      right: auto;
+    }
+
+    & svg {
+      height: 24px;
+      width: 24px;
+    }
+  }
+
+  &__zoom-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+
+    position: absolute;
+    top: 25px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    z-index: 10;
+  }
+
+  &__zoom-title {
+    margin: 0;
+
+    font-family: var(--font-body);
+    font-style: normal;
+    font-weight: 500;
+    font-size: 11px;
+    line-height: 9px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #1d1d1d;
+  }
+
+  &__zoom-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+
+    border-radius: 100%;
+    border: 1px solid #1d1d1d40;
+    background: transparent;
+    cursor: pointer;
+    box-shadow: none;
+    outline: none;
+
+    & svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    &:disabled {
+      & svg {
+        opacity: 0.3;
+      }
+    }
+
+    &:focus-visible {
+      box-shadow: none;
+      outline: none;
+    }
+  }
+
+  &__progress {
+    position: absolute;
+    bottom: 16px;
+    right: 32px;
+
+    font-family: var(--font-body);
+    font-style: normal;
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 9px;
+    text-align: right;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #1d1d1d;
+
+    .c-product-gallery-zoom--rtl & {
+      left: 32px;
+      right: auto;
+    }
+  }
+
+  &__cell {
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &.is-selected img {
+      @media screen and (min-width: 768px) {
+        display: block;
+      }
+    }
+  }
+
+  &__container {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+
+    @media screen and (min-width: 768px) {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: grab;
+    }
+
+    &--video {
+      max-height: 768px;
+      aspect-ratio: 3 / 4;
+      width: auto;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      iframe {
+        width: 100%;
+        height: 100%;
+        aspect-ratio: 3 / 4;
+        max-height: 768px;
+        border: none;
+        display: block;
+      }
+    }
+
+    & img {
+      width: 100%;
+      position: unset;
+      height: 100%;
+      object-fit: contain;
+      max-height: 768px;
+      aspect-ratio: 3 / 4;
+    }
+
+    @media screen and (min-width: 768px) {
+      &[data-zoom="1"] {
+        & img {
+          transform: scale(2);
+        }
+      }
+
+      &[data-zoom="2"] {
+        cursor: zoom-out;
+        & img {
+          transform: scale(3);
+        }
+      }
+    }
+  }
+
+  &__thumb-wrapper {
+    width: 80px;
+    height: 100%;
+
+    position: absolute;
+    top: 80px;
+    left: 32px;
+    z-index: 10;
+
+    .c-product-gallery-zoom--rtl & {
+      left: auto;
+      right: 32px;
+    }
+  }
+
+  &__thumb-cell {
+    height: fit-content !important;
+    opacity: 0.5;
+    transition: opacity 500ms ease;
+
+    &.swiper-slide-thumb-active {
+      opacity: 1;
+    }
+  }
+
+  &__thumb-container {
+    display: flex;
+    cursor: pointer;
+
+    & img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      aspect-ratio: 3/4;
+    }
+  }
+}

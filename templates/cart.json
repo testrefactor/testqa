@@ -1,11 +1,24 @@
 {
   "sections": {
     "main": {
-      "type": "empty-section",
-      "settings": {}
+      "type": "main-cart",
+      "settings": {
+        "section_top_padding": 80,
+        "section_bottom_padding": 76,
+        "section_top_padding_mobile": 70,
+        "section_bottom_padding_mobile": 70,
+        "section_bg_color": "#ffffff",
+        "header_title": "Shopping bag",
+        "header_title_ar": "عربة التسوق",
+        "empty_text": "Your shopping bag is empty",
+        "empty_text_ar": "عربة التسوق فارغة",
+        "empty_title": "Discover & Join The Very Best",
+        "empty_title_ar": "اكتشف وانضم إلى الأفضل",
+        "empty_cta": "Join Amirah Club",
+        "empty_cta_ar": "انضم إلى نادي أميرة",
+        "show_tabby": true
+      }
     }
   },
-  "order": [
-    "main"
-  ]
+  "order": ["main"]
 }

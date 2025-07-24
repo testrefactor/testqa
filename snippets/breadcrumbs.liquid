@@ -1,0 +1,118 @@
+{% comment %}
+  Breadcrumbs nnn
+
+  Required assets:
+    Styles: component-breadcrumbs.css
+
+  Metafields:
+    product.metafields.custom.breadcrumbs_custom_additional_link - list of single line text | Ex: 'About us:::link_url'
+    collection.metafields.custom.breadcrumbs_custom_additional_link - list of single line text | Ex: 'About us:::link_url'
+    page.metafields.custom.breadcrumbs_custom_additional_link
+
+  PubSub Publish:
+
+  PubSub Subscribed:
+
+  Component Accepts:
+
+{% endcomment %}
+
+<nav class="c-breadcrumbs {% if localization.language.iso_code == 'ar' %}c-breadcrumbs--rtl{% endif %}" role="navigation" aria-label="breadcrumbs">
+  <ul class="c-breadcrumbs__list">
+    <li class="c-breadcrumbs__item">
+      <a class="c-breadcrumbs__link" href="/" title="Home">
+        {{ 'components.breadcrumbs.home-text' | t }}
+      </a>
+    </li>
+
+    {% case template.name %}
+      {% when 'product' %}
+
+        {% if collection %}
+          <li class="c-breadcrumbs__item">
+            <a class="c-breadcrumbs__link" href="{{- collection.url -}}" title="{{- collection.title -}}">
+              {{- collection.title -}}
+            </a>
+          </li>
+        {% endif %}
+
+        {% comment %} Metafield: Breadcrumbs custom additional link {% endcomment %}
+        {% assign breadcrumbs_add_link = product.metafields.custom.breadcrumbs_custom_additional_link.value %}
+
+        {% if breadcrumbs_add_link %}
+          {% for link in breadcrumbs_add_link %}
+            {% assign link_splited = link | split: ':::' %}
+
+            <li class="c-breadcrumbs__item">
+              <a class="c-breadcrumbs__link" href="{{- link_splited[1] -}}" title="{{- link_splited[0] -}}">
+                {{- link_splited[0] -}}
+              </a>
+            </li>
+          {% endfor %}
+        {% endif %}
+        {% comment %} Metafield: Breadcrumbs custom additional link {% endcomment %}
+
+        <li class="c-breadcrumbs__item">
+          <span class="c-breadcrumbs__text">
+            {{- product.title -}}
+          </span>
+        </li>
+      {% when 'collection' %}
+
+        {% comment %} Metafield: Breadcrumbs custom additional link {% endcomment %}
+        {% assign breadcrumbs_add_link = collection.metafields.custom.breadcrumbs_custom_additional_link.value %}
+
+        {% if breadcrumbs_add_link %}
+          {% for link in breadcrumbs_add_link %}
+            {% assign link_splited = link | split: ':::' %}
+
+            <li class="c-breadcrumbs__item">
+              <a class="c-breadcrumbs__link" href="{{- link_splited[1] -}}" title="{{- link_splited[0] -}}">
+                {{- link_splited[0] -}}
+              </a>
+            </li>
+          {% endfor %}
+        {% endif %}
+        {% comment %} Metafield: Breadcrumbs custom additional link {% endcomment %}
+
+        <li class="c-breadcrumbs__item">
+          <span class="c-breadcrumbs__text">
+            {{- collection.title -}}
+          </span>
+        </li>
+
+      {% when 'page' %}
+
+        {% comment %} Metafield: Breadcrumbs custom additional link {% endcomment %}
+        {% assign breadcrumbs_add_link = page.metafields.custom.breadcrumbs_custom_additional_link.value %}
+
+        {% if breadcrumbs_add_link %}
+          {% for link in breadcrumbs_add_link %}
+            {% assign link_splited = link | split: ':::' %}
+
+            <li class="c-breadcrumbs__item">
+              <a class="c-breadcrumbs__link" href="{{- link_splited[1] -}}" title="{{- link_splited[0] -}}">
+                {{- link_splited[0] -}}
+              </a>
+            </li>
+          {% endfor %}
+        {% endif %}
+        {% comment %} Metafield: Breadcrumbs custom additional link {% endcomment %}
+
+        <li class="c-breadcrumbs__item">
+          <span class="c-breadcrumbs__text">
+            {{- page.title -}}
+          </span>
+        </li>
+
+      {% else %}
+
+        <li class="c-breadcrumbs__item">
+          <span class="c-breadcrumbs__text">
+              {{- template.name | capitalize -}}
+          </span>
+        </li>
+
+    {% endcase %}
+  </ul>
+</nav>

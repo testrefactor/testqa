@@ -1,0 +1,150 @@
+{% if product.metafields.custom.pdp_description.value or product.metafields.custom.pdp_care_guide.value or product.metafields.custom.pdp_delivery.value %}
+  {{ 'section-product-info.css'| asset_url | stylesheet_tag }}
+
+  {% style %}
+    #shopify-section-{{ section.id }} .s-product-info {
+      padding-top: {{ section.settings.section_top-padding_mobile }}px;
+      padding-bottom: {{ section.settings.section_bottom-padding_mobile }}px;
+  
+      {% if section.settings.show_on_mobile %}
+        display: block;
+      {% else %}
+        display: none;
+      {% endif %}
+    }
+  
+    @media screen and (min-width: 768px) {
+      #shopify-section-{{ section.id }} .s-product-info {
+        display: block;
+        padding-top: {{ section.settings.section_top-padding }}px;
+        padding-bottom: {{ section.settings.section_bottom-padding }}px;
+      }
+    }
+  {% endstyle %}
+
+  {% liquid
+    assign rtl = false
+    if localization.language.iso_code == 'ar'
+      assign rtl = true
+    endif
+  %}
+
+  <div class="s-product-info {% if rtl %}s-product-info--rtl{% endif %}">
+    <div class="s-product-info__inner">
+
+      {% if product.metafields.custom.pdp_description.value %}
+        <input class="s-product-info__tab-input" type="radio" id="product-info_tab-description" name="product-info_tabs" checked hidden>
+      {% endif %}
+
+      {% if product.metafields.custom.pdp_care_guide.value %}
+        <input class="s-product-info__tab-input" type="radio" id="product-info_tab-care-guide" name="product-info_tabs" hidden>
+      {% endif %}
+
+      {% if product.metafields.custom.pdp_delivery.value %}
+        <input class="s-product-info__tab-input" type="radio" id="product-info_tab-delivery" name="product-info_tabs" hidden>
+      {% endif %}
+
+      <div class="s-product-info__tabs">
+        {% if product.metafields.custom.pdp_description.value %}
+          <label for="product-info_tab-description" class="s-product-info__tab">
+            {{ 'sections.product_info.description_tab_title' | t }}
+          </label>
+        {% endif %}
+
+        {% if product.metafields.custom.pdp_care_guide.value %}
+          <label for="product-info_tab-care-guide" class="s-product-info__tab">
+            {{ 'sections.product_info.care_guide_tab_title' | t }}
+          </label>
+        {% endif %}
+
+        {% if product.metafields.custom.pdp_delivery.value %}
+          <label for="product-info_tab-delivery" class="s-product-info__tab">
+            {{ 'sections.product_info.delivery_tab_title' | t }}
+          </label>
+        {% endif %}
+      </div>
+
+      <div class="s-product-info__tabs-content">
+        {% if product.metafields.custom.pdp_description.value %}
+          <div class="s-product-info__tab-content" data-tab="description">
+            {{ product.metafields.custom.pdp_description | metafield_tag }}
+          </div>
+        {% endif %}
+
+        {% if product.metafields.custom.pdp_care_guide.value %}
+          <div class="s-product-info__tab-content" data-tab="care_guide">
+            {{ product.metafields.custom.pdp_care_guide | metafield_tag }}
+          </div>
+        {% endif %}
+
+        {% if product.metafields.custom.pdp_delivery.value %}
+          <div class="s-product-info__tab-content" data-tab="delivery">
+            {{ product.metafields.custom.pdp_delivery | metafield_tag }}
+          </div>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+
+{% endif %}
+
+
+{% schema %}
+{
+  "name": "Product info",
+  "limit": 1,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "id": "section_top-padding",
+      "label": "Top padding",
+      "type": "range",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "id": "section_bottom-padding",
+      "label": "Bottom padding",
+      "type": "range",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "id": "section_top-padding_mobile",
+      "label": "Top padding (Mobile)",
+      "type": "range",
+      "min": 0,
+      "max": 90,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "id": "section_bottom-padding_mobile",
+      "label": "Bottom padding (Mobile)",
+      "type": "range",
+      "min": 0,
+      "max": 90,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "checkbox",
+      "id": "show_on_mobile",
+      "label": "Show on mobile",
+      "default": false
+    }
+  ]
+}
+{% endschema %}

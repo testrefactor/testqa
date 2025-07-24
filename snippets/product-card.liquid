@@ -1,0 +1,378 @@
+{% comment %}
+  Styles: component-product-card.css
+  Scripts: component-product-card.js, component-wishlist-button.js
+
+  Accepts:
+  {Object} - product (required)
+  {Boolean} - has_variant_picker (required)
+{% endcomment %}
+
+{% liquid
+  assign item_remove_wishlist = remove_wishlist | default: false
+  assign rtl = false
+
+  if localization.language.iso_code == 'ar'
+    assign rtl = true
+  endif
+
+  assign has_one_variant = false
+
+  if product.has_only_default_variant or product.variants.size == 1
+    assign has_one_variant = true
+  endif
+
+  assign options_length = 0
+
+  for option in product.options_with_values
+    if option.values.size > 1
+      assign options_length = options_length | plus: 1
+    endif
+  endfor
+%}
+
+{% assign sellable_status = product.metafields.custom.sellable_status.value %}
+{% comment %} please note, this metafield is used only for the international store {% endcomment %}
+
+<c-product-card
+  class="c-product-card {% if rtl %}c-product-card--rtl{% endif %}"
+  data-product="{{ product.id }}"
+  data-product-handle="{{ product.handle }}"
+  data-variant="{{has_variant_picker}}"
+  data-variant-id="{{ product.selected_variant.id }}"
+  data-options-length="{{ options_length }}"
+  data-one-variant="{{ has_one_variant }}"
+  data-product-json="{{ product | json | escape }}"
+  data-variant-json="{{ product.selected_variant | json | escape }}"
+  data-offer-tags="{{ product.metafields.custom.tags_list.value }}"
+>
+  <div
+    id="overlay-section--{{ section.id }}-product--{{ product.id }}"
+    class="c-product-card__overlay js-product-card__overlay"
+  ></div>
+  <div class="c-product-card__inner">
+    <div class="c-product-card__top js-product-card__image-container">
+      {% if product.metafields.custom.product_tags.value != blank %}
+        <div class="c-product-card__badges">
+          {% for badge in product.metafields.custom.product_tags.value %}
+            {% if forloop.first %}
+              <span
+                class="c-product-card__badge"
+                style="background-color: {{ badge.background_color |  append: '' | color_to_rgb | replace: ')', ', 0.5)'  }};"
+              >
+                {{- badge.name -}}
+              </span>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% if item_remove_wishlist %}
+        {% render 'wishlist-remove-button',
+          class: 'c-product-card__wishlist-button js-product-card__wishlist-remove',
+          product: product,
+          item_to_delete: 'c-product-card'
+        %}
+      {% else %}
+        {% render 'wishlist-button',
+          class: 'c-product-card__wishlist-button',
+          product: product,
+          item_to_delete: 'c-product-card'
+        %}
+      {% endif %}
+
+      {% unless has_variant_picker == false %}
+        <button class="c-product-card__open-picker-mobile js-product-card__open-picker-mobile">
+          {% render 'icon-quick-add' %}
+        </button>
+      {% endunless %}
+
+      {% unless has_variant_picker == false %}
+        <div
+          id="picker-section--{{ section.id }}-product--{{ product.id }}"
+          class="c-product-card__variant-picker-desktop js-product-card__variant-picker-desktop"
+        >
+          <div
+            class="c-product-card__variant-picker js-product-card__variant-picker"
+            data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+          >
+            <div class="c-product-card__variant-picker-top hide-desktop">
+              <div class="c-product-card__picker-sticky-button-wrapper js-product-card__picker-sticky-button">
+                <div class="c-product-card__picker-sticky-button"></div>
+              </div>
+              <div class="c-product-card__picker-close-modal js-product-card__picker-close-modal">
+                {% render 'icon-close' %}
+              </div>
+              <h2 class="c-product-card__picker-title">{{ product.title }}</h2>
+              <div class="c-product-card__picker-description">
+                {{ product.metafields.custom.product_description.value }}
+              </div>
+              <div class="c-product-card__picker-image">
+                {% if product.selected_or_first_available_variant.featured_image != blank %}
+                  {% render 'image-lazy',
+                    image: product.selected_or_first_available_variant.featured_image,
+                    class: '',
+                    lazy: true
+                  %}
+                {% elsif product.images[0] != blank %}
+                  {% render 'image-lazy', image: product.images[0], class: '', lazy: true %}
+                {% endif %}
+              </div>
+            </div>
+            <div class="js-product-card__form-container">
+              {% form 'product', product, class: 'c-product-card__form js-product-card__form' %}
+                {% liquid
+                  assign first_option_to_show = 0
+                %}
+                {% for option in product.options_with_values %}
+                  {% unless option.values.size == 1 %}
+                    {% comment %}we never disable first options in variant picker{% endcomment %}
+                    {% liquid
+                      assign no_disable = false
+
+                      assign is_first_option = false
+                      if forloop.first
+                        assign is_first_option = true
+                      endif
+
+                      if first_option_to_show == 0
+                        assign first_option_to_show = option.position
+                      endif
+
+                      if is_first_option or option.position == first_option_to_show
+                        assign no_disable = true
+                      endif
+
+                      if options_length == 3 and option.position == 2
+                        assign no_disable = true
+                      endif
+
+                      if options_length == 1
+                        assign no_disable = false
+                      endif
+                    %}
+                    <div class="c-product-card__option-name">{{ option.name }}</div>
+                    <fieldset class="c-product-card__option js-product-card__option">
+                      {% liquid
+                        assign option_name = option.name | downcase | handleize
+                        assign diagonal_class = ''
+                        if option_name contains 'cup'
+                          assign diagonal_class = 'disable-diagonal'
+                        endif
+                      %}
+                      {% for value in option.values %}
+                        <div>
+                          <input
+                            type="radio"
+                            class="c-product-card__option-input {% if no_disable %}no-disable{% endif %}"
+                            id="{{ product.id }}--{{ option.name | handleize }}-{{ value.name | handleize }}"
+                            name="{{ option.name }}-{{ product.id }}"
+                            value="{{ value | escape }}"
+                            data-variant-id="{{ value.variant.id }}"
+                            data-option-position="{{ option.position }}"
+                            hidden
+                          >
+                          <label
+                            for="{{ product.id }}--{{ option.name | handleize }}-{{ value.name | handleize }}"
+                            class="c-product-card__option-label {{ diagonal_class }}"
+                            title="{{ value }}"
+                          >
+                            {{ value }}
+                          </label>
+                        </div>
+                      {% endfor %}
+                    </fieldset>
+                  {% endunless %}
+                {% endfor %}
+              {% endform %}
+            </div>
+          </div>
+          {% if sellable_status == 'YES' or sellable_status == blank %}
+            <div class="c-product-card__quick-buy-container js-product-card__quick-buy-container">
+              {% liquid
+                assign button_class = ''
+                unless product.selected_variant.available
+                  if product.metafields.custom.is_preorder.value == true
+                    assign button_class = 'js-product-card__pre-order'
+                  else
+                    assign button_class = 'js-product-card__notify-me'
+                  endif
+                endunless
+              %}
+
+              <button
+                type="button"
+                class="c-product-card__quick-buy js-product-card__quick-buy {{ button_class }}"
+                data-state="0"
+              >
+                <span class="c-product-card__quick-buy--0">
+                  {%- if product.available -%}
+                    {{- 'components.product_card.quick_buy' | t -}}
+                  {%- else -%}
+                    {{- 'components.product_card.out_of_stock' | t -}}
+                  {%- endif -%}
+                </span>
+                <span class="c-product-card__quick-buy--1">{{ 'components.product_card.select_sizes' | t }}</span>
+                <span class="c-product-card__quick-buy--2">
+                  {% if product.selected_variant.available %}
+                    {{ 'components.product_card.add_to_bag' | t }}
+                  {% else %}
+                    {% if product.metafields.custom.is_preorder.value == true %}
+                      {{ 'components.product_card.pre_order' | t }}
+                    {% else %}
+                      {{- 'components.product_card.out_of_stock' | t -}}
+                    {% endif %}
+                  {% endif %}
+                </span>
+                <span class="c-product-card__quick-buy--3">{{ 'components.product_card.not_available' | t }}</span>
+              </button>
+            </div>
+          {% endif %}
+        </div>
+      {% endunless %}
+
+      <a
+        href="{{ product.url }}"
+        class="c-product-card__images-container"
+      >
+        {% assign is_preload = preload_image | default: false %}
+        {% if product.images.size > 1 %}
+          {% if product.images[0] != blank and product.images[1] != blank %}
+            {% render 'image',
+              image: product.images[0],
+              ratio_wrap: false,
+              class: 'c-product-card__image c-product-card__image--state--default js-product-card__image--state--default',
+              lazy: is_preload
+            %}
+            {% render 'image-lazy',
+              image: product.images[1],
+              class: 'c-product-card__image c-product-card__image--state--hover js-product-card__image--state--hover'
+            %}
+          {% endif %}
+
+        {% elsif product.images[0] != blank %}
+          {% render 'image',
+            image: product.images[0],
+            ratio_wrap: false,
+            class: 'c-product-card__image c-product-card__image--state--default js-product-card__image--state--default',
+            lazy: is_preload
+          %}
+        {% endif %}
+      </a>
+    </div>
+
+    <div class="c-product-card__bottom">
+      <a href="{{ product.url }}" class="c-product-card__title">
+        {{ product.title }}
+      </a>
+
+      <a href="{{ product.url }}" class="c-product-card__description-wrapper">
+        <div class="c-product-card__description">
+          {{ product.metafields.custom.product_description.value }}
+        </div>
+        <div class="c-product-card__colors">
+          {% liquid
+            assign color_title = 'sections.main_product.color_option_title' | t
+            assign swatches_amount = 0
+            for color_variant in product.metafields.custom.color_variants.value
+              assign swatches_amount = swatches_amount | plus: 1
+            endfor
+          %}
+          {% for product_option in product.options_with_values %}
+            {% case product_option.name %}
+              {% when color_title, 'Color', 'اللون' %}
+                {% assign color_option_position = product_option.position | minus: 1 %}
+            {% endcase %}
+          {% endfor %}
+          {% assign color_swatch_first = product.options_with_values[color_option_position].values[0].swatch.color %}
+          {% assign image_swatch_first = product.options_with_values[color_option_position].values[0].swatch.image %}
+          <span
+            class="c-product-card__swatch  c-product-card__swatch--first js-product-card__swatch"
+            data-color="{{ color_swatch_first }}"
+            style="background-color: {{ color_swatch_first }}; {% if rtl %}right: -{{ swatches_amount | times: 9 }}px;{% else %}right: {{ swatches_amount | times: 9 }}px;{% endif %}"
+          >
+            {% if color_swatch_first == blank and image_swatch_first != blank %}
+              <div class="c-product-card__swatch--image">
+                {% render 'image-lazy', image: image_swatch_first %}
+              </div>
+            {% endif %}
+          </span>
+          {% for color_variant in product.metafields.custom.color_variants.value %}
+            {% for product_option in color_variant.options_with_values %}
+              {% case product_option.name %}
+                {% when color_title, 'Color', 'اللون' %}
+                  {% assign color_option_position = product_option.position | minus: 1 %}
+              {% endcase %}
+            {% endfor %}
+            {% assign margin = swatches_amount | minus: forloop.index | times: 9 %}
+            {% assign color_swatch = color_variant.options_with_values[color_option_position].values[0].swatch.color %}
+            {% assign image_swatch = color_variant.options_with_values[color_option_position].values[0].swatch.image %}
+            <span
+              class="c-product-card__swatch js-product-card__swatch"
+              data-color="{{ color_swatch }}"
+              style="background-color: {{ color_swatch }}; z-index: {{ forloop.index }}; {% if rtl %}right: -{{ margin }}px;{% else %}right: {{ margin }}px;{% endif %}"
+            >
+              {% if color_swatch == blank and image_swatch != blank %}
+                <div class="c-product-card__swatch--image">
+                  {% render 'image-lazy', image: image_swatch %}
+                </div>
+              {% endif %}
+            </span>
+          {% endfor %}
+        </div>
+      </a>
+
+      <div class="c-product-card__price-container">
+        {% if product.metafields.custom.offer_pills.value != blank %}
+          <div class="c-product-card__offer-pill">
+            {% for offer_pill in product.metafields.custom.offer_pills.value %}
+              {% if forloop.first %}
+                {% liquid
+                  assign long_title = false
+                  assign title_length = offer_pill.title.value.size
+                  if title_length > 8
+                    assign long_title = true
+                  endif
+                %}
+
+                <span
+                  style="background-color: {{ offer_pill.background_color.value }};"
+                  class="{% if long_title %}long-title{% endif %}"
+                >
+                  {{- offer_pill.title.value -}}
+                </span>
+                {% break %}
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <a href="{{ product.url }}" class="c-product-card__price-wrapper">
+          {%- if product.selected_or_first_available_variant.compare_at_price -%}
+            <span class="c-product-card__price c-product-card__price--discount">
+              {% if rtl %}
+                <span>{{ product.selected_or_first_available_variant.price | money_without_currency }}</span>
+                <span class="c-product-card__price-text">{{ shop.currency }}</span>
+              {% else %}
+                <span class="c-product-card__price-text">{{ shop.currency }}</span>
+                <span>{{ product.selected_or_first_available_variant.price | money_without_currency }}</span>
+              {% endif %}
+            </span>
+
+            <span class="c-product-card__price c-product-card__price--compare-at">
+              <span class="c-product-card__price-text">{{ 'components.product_card.was' | t }}</span>
+              <span>
+                {{- product.selected_or_first_available_variant.compare_at_price | money_without_currency -}}
+              </span>
+            </span>
+
+          {%- else -%}
+            <span class="c-product-card__price">
+              <span class="c-product-card__price-text">{{ shop.currency }}</span>
+              {{ product.selected_or_first_available_variant.price | money_without_currency }}
+            </span>
+          {%- endif -%}
+        </a>
+      </div>
+    </div>
+  </div>
+</c-product-card>

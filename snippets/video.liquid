@@ -1,0 +1,38 @@
+{% comment %}
+  Render video with custom controls
+
+  Accepts:
+    {Object} - video (required)
+    {Sting} - class (optional)
+    {Boolean} - video_autoplay (optional)
+{% endcomment %}
+
+{% if video_autoplay %}
+  {% assign autoplay = video_autoplay %}
+{% else %}
+  {% assign autoplay = false %}
+{% endif %}
+
+<c-video class="c-video js-video {{ class }}">
+  <div class="c-video__inner">
+    <button
+      class="c-video__video-button js-video__video-button"
+      {% if autoplay %}
+        data-pause="false"
+        data-show="false"
+      {% else %}
+        data-pause="true"
+        data-show="true"
+      {% endif %}
+
+    >
+      <div class="c-video__video-button-inner">
+        <div class="c-video__video-button-icons">
+          {% render 'icon-play-slim' %}
+          {% render 'icon-pause' %}
+        </div>
+      </div>
+    </button>
+    {{ video | video_tag: autoplay: autoplay, loop: true, muted: true, controls: false, image_size: '768x' }}
+  </div>
+</c-video>

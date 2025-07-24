@@ -1,0 +1,200 @@
+{{ 'section-recommended-products.css' | asset_url | stylesheet_tag }}
+{{ 'component-product-card.css' | asset_url | stylesheet_tag }}
+
+{% style %}
+  #shopify-section-{{ section.id }} .s-recommended-products {
+    padding-top: {{ section.settings.margin_top_mobile }}px;
+    padding-bottom: {{ section.settings.margin_bottom_mobile }}px;
+    background-color: {{ section.settings.bgd_color_m }};
+  }
+
+  @media screen and (min-width: 768px) {
+    #shopify-section-{{ section.id }} .s-recommended-products {
+      padding-top: {{ section.settings.margin_top_desktop }}px;
+      padding-bottom: {{ section.settings.margin_bottom_desktop }}px;
+      background-color: {{ section.settings.bgd_color_d }};
+    }
+  }
+{% endstyle %}
+
+<script src="{{ 'section-recommended-products.js' | asset_url }}" defer></script>
+<script src="{{ 'component-product-card.js' | asset_url }}" defer></script>
+
+{% liquid
+  assign rtl = false
+  if localization.language.iso_code == 'ar'
+    assign rtl = true
+  endif
+%}
+
+<s-recommended-products
+  class="s-recommended-products {% if rtl %}s-recommended-products--rtl{% endif %}"
+  data-section-id="{{ section.id }}"
+  data-product-id="{{ product.id }}"
+  data-product-handle="{{ product.handle }}"
+  data-product-limit="{{ section.settings.product_limit }}"
+>
+  <div class="s-recommended-products__container">
+    <div class='s-recommended-products__top'>
+      {% if section.settings.show_title %}
+        <h2 class="s-recommended-products__title">
+          {{ 'sections.recommended_products.recommended_title' | t }}
+        </h2>
+      {% endif %}
+
+      {% if section.settings.show_shop_all %}
+        <span class='js-recommended-products__shop-all-wrapper'></span>
+      {% endif %}
+    </div>
+
+    <div class="s-recommended-products__slider-wrapper js-recommended-products__slider-wrapper">
+      {%- if recommendations.performed? and recommendations.products_count > 0 -%}
+        <swiper-container
+        class="s-recommended-products__slider js-recommended-products__slider"
+        init="false"
+        scrollbar="true"
+        navigation="false"
+        loop="true"
+        speed="500"
+        slides-per-view="2"
+        space-between="60"
+        breakpoints='
+          {
+            "358": {
+              "slidesPerView": 2,
+              "spaceBetween": 24
+            },
+            "560": {
+              "slidesPerView": 3,
+              "spaceBetween": 16
+            },
+            "1024": {
+              "slidesPerView": 4
+            }
+          }
+        '
+      >
+        {%- for product in recommendations.products limit: section.settings.product_limit -%}
+          <swiper-slide
+            class='js-recommended-products__slide'
+            data-collection='{{ product.collections.first.url }}'
+          >
+            {% render 'product-card', product: product %}
+          </swiper-slide>
+        {%- endfor -%}
+        </swiper-container>
+      {% endif %}
+    </div>
+
+    {% if section.settings.show_arrows %}
+      <button class="s-recommended-products__slider-button s-recommended-products__slider-button-prev js-recommended-products__prev">
+        {% render 'icon-arrow-left' %}
+      </button>
+      <button class="s-recommended-products__slider-button s-recommended-products__slider-button-next js-recommended-products__next">
+        {% render 'icon-arrow-left' %}
+      </button>
+    {% endif %}
+  </div>
+
+  <template class='t-recommended-products__shop-all'>
+    <a href='{link}' class='s-recommended-products__shop-all'>
+      {{ 'sections.recommended_products.shop_all' | t }}
+    </a>
+  </template>
+</s-recommended-products>
+
+{% schema %}
+{
+  "name": "Recommendations Slider",
+  "settings": [
+    {
+      "type": "range",
+      "id": "margin_top_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Section margin top (Desktop)",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Section margin bottom (Desktop)",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Section margin top (Mobile)",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Section margin bottom (Mobile)",
+      "default": 0
+    },
+    {
+      "type": "color",
+      "id": "bgd_color_d",
+      "label": "Background color (Desktop)",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "bgd_color_m",
+      "label": "Background color (Mobile)",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "range",
+      "id": "product_limit",
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "label": "Product limit for slider",
+      "default": 10
+    },
+    {
+      "id": "show_title",
+      "label": "Show section title",
+      "type": "checkbox",
+      "default": true
+    },
+    {
+      "id": "show_shop_all",
+      "label": "Show shop all button",
+      "type": "checkbox",
+      "default": false
+    },
+    {
+      "id": "show_arrows",
+      "label": "Show slider arrows (Desktop)",
+      "type": "checkbox",
+      "default": true
+    }
+  ],
+  "limit": 1,
+  "enabled_on": {
+    "templates": ["product"]
+  },
+  "presets": [
+    {
+      "name": "Recommendations Slider"
+    }
+  ]
+}
+{% endschema %}

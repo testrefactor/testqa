@@ -1,0 +1,48 @@
+
+
+<div class="c-pdp-accordion">
+  <div class="c-pdp-accordion__inner">
+
+    {% if product.metafields.custom.pdp_description.value %}
+      <div class="c-pdp-accordion__item">
+        <input type="radio" class="c-pdp-accordion__input" id="pdp-accordion_tab-description" name="pdp-accordion">
+        <label for="pdp-accordion_tab-description" class="c-pdp-accordion__label">
+          {{ 'components.pdp_accordion.description_tab_title' | t }}
+
+          {% render 'icon-accordion' %}
+        </label>
+        <div class="c-pdp-accordion__content">
+          {{ product.metafields.custom.pdp_description | metafield_tag }}
+        </div>
+      </div>
+    {% endif %}
+
+    {% if product.metafields.custom.pdp_care_guide.value %}
+      <div class="c-pdp-accordion__item">
+        <input type="radio" class="c-pdp-accordion__input" id="pdp-accordion_tab-care-guide" name="pdp-accordion">
+        <label for="pdp-accordion_tab-care-guide" class="c-pdp-accordion__label">
+          {{ 'components.pdp_accordion.care_guide_tab_title' | t }}
+
+          {% render 'icon-accordion' %}
+        </label>
+        <div class="c-pdp-accordion__content">
+          {{ product.metafields.custom.pdp_care_guide | metafield_tag }}
+        </div>
+      </div>
+    {% endif %}
+
+    {% if product.metafields.custom.pdp_delivery.value %}
+      <div class="c-pdp-accordion__item">
+        <input type="radio" class="c-pdp-accordion__input" id="pdp-accordion_tab-delivery" name="pdp-accordion">
+        <label for="pdp-accordion_tab-delivery" class="c-pdp-accordion__label">
+          {{ 'components.pdp_accordion.delivery_tab_title' | t }}
+
+          {% render 'icon-accordion' %}
+        </label>
+        <div class="c-pdp-accordion__content">
+          {{ product.metafields.custom.pdp_delivery | metafield_tag }}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>

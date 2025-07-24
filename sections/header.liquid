@@ -1,0 +1,274 @@
+{{ 'section-header.css' | asset_url | stylesheet_tag }}
+{{ 'component-language-switcher.css' | asset_url | stylesheet_tag }}
+
+{% liquid
+  assign add_padding_top = false
+  if template contains 'standard_page' or template contains 'contact-us'
+    assign add_padding_top = true
+  endif
+%}
+
+{% style %}
+  {% if add_padding_top %}
+    #shopify-section-{{ section.id }}{
+      padding-top: 80px;
+    }
+  {% endif %}
+
+  #shopify-section-{{ section.id }} .s-header {
+    padding-top: {{ section.settings.padding_top_mobile }}px;
+    padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+  }
+
+  @media screen and (min-width: 768px) {
+    #shopify-section-{{ section.id }} .s-header {
+      padding-top: {{ section.settings.padding_top_desktop }}px;
+      padding-bottom: {{ section.settings.padding_bottom_desktop }}px;
+    }
+
+    #shopify-section-{{ section.id }} .s-header--homepage:not(.bg-filled) .c-language-switcher__item:has(input:checked) {
+      background-color: {{ section.settings.button_bg_color_transparent }};
+    }
+
+    #shopify-section-{{ section.id }} .s-header--homepage:not(.bg-filled) .c-language-switcher__item:has(input:checked) .c-language-switcher__label-desktop {
+      color: {{ section.settings.button_text_color_tansparent }};
+    }
+
+    #shopify-section-{{ section.id }} .s-header--homepage.bg-filled .c-language-switcher__item:has(input:checked) {
+      background-color: {{ section.settings.button_bg_color_regular }};
+    }
+
+    #shopify-section-{{ section.id }} .s-header--homepage.bg-filled .c-language-switcher__item:has(input:checked) .c-language-switcher__label-desktop {
+      color: {{ section.settings.button_text_color_regular }};
+    }
+  }
+{% endstyle %}
+
+<script src="{{ 'section-header.js' | asset_url }}" defer></script>
+<script src="{{ "component-language-switcher.js" | asset_url }}" defer></script>
+
+{% liquid
+  assign rtl = false
+  if localization.language.iso_code == 'ar'
+    assign rtl = true
+  endif
+%}
+
+<s-header class="s-header {% if rtl %}s-header--rtl{% endif %} {% if template.name == 'index' %}s-header--homepage{% endif %} transition-disable hide {% if add_padding_top %}s-header__standard-page{% endif %}">
+  <div class="s-header__container">
+    <div class="s-header__nav s-header__left">
+      <div class="s-header__item js-header__menu-button-mobile hide-desktop">{% render 'icon-burger' %} <span class="hide-mobile">{{ 'sections.header.shop' | t }}</span></div>
+      <div class="s-header__item js-header__menu-button-desktop hide-mobile">{% render 'icon-burger' %} <span class="hide-mobile">{{ 'sections.header.shop' | t }}</span></div>
+      <div class="s-header__item js-header__search-button hide-mobile">{% render 'icon-search' %} <span>{{ 'sections.header.search' | t }}</span></div>
+    </div>
+    <a href="{{ routes.root_url }}" class="s-header__logo-wrapper">
+      <div class="s-header__logo js-header__logo">{{ section.settings.logo_full }}</div>
+      <div class="s-header__monogram js-header__monogram">{{ section.settings.logo_monogram }}</div>
+    </a>
+    <div class="s-header__nav s-header__right">
+      <div class="s-header__item js-header__search-button hide-desktop">{% render 'icon-search' %}</div>
+      <div class="s-header__switcher hide-mobile">{% render 'language-switcher' %}</div>
+      <a href="{{ routes.root_url }}{% if localization.language.root_url.last != '/' %}/{% endif %}pages/store-locator" class="s-header__locator-button hide-mobile"> {% render 'icon-locator' %}</a>
+      <a href="{{ routes.root_url }}{% if localization.language.root_url.last != '/' %}/{% endif %}pages/wishlist" class="s-header__wishlist s-header__cart-button hide-mobile">
+        {% render 'icon-wishlist-2' %}
+        <span class="s-header__cart-counter js-header__wishlist-count"></span>
+      </a>
+      {% if customer %}
+        <a href="{{ routes.account_url }}" class="hide-mobile">{% render 'icon-account' %}</a>
+      {% else %}
+        <button class="s-header__account-button js-header__account-button">
+          {% render 'icon-account' %}
+        </button>
+      {% endif %}
+      <button class="s-header__cart-button js-header__cart-button">
+        {% render 'icon-cart' %}
+        <span class="s-header__cart-counter js-header__cart-count"></span>
+      </button>
+    </div>
+  </div>
+</s-header>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section settings"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Top Space",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Bottom Space",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Top Space (Mobile)",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Bottom Space (Mobile)",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Desktop Menu"
+    },
+    {
+      "type": "link_list",
+      "id": "mega_menu_links",
+      "label": "Desktop Mega Menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "titles_as_links",
+      "label": "Titles as links",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Logo Settings"
+    },
+    {
+      "type": "html",
+      "id": "logo_full",
+      "label": "Logo Full",
+      "info": "Image Recommended: svg code"
+    },
+    {
+      "type": "html",
+      "id": "logo_monogram",
+      "label": "Logo Monogram",
+      "info": "Image Recommended: svg code"
+    },
+    {
+      "type": "header",
+      "content": "Language Switcher button settings"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color_tansparent",
+      "label": "Active Language Text Color (transparent Header)",
+      "default": "#1D1D1D"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color_regular",
+      "label": "Active Language Text Color (regular Header)",
+      "default": "#F4C3CC"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color_transparent",
+      "label": "Active Language Bg Color (transparent Header)",
+      "default": "#F9F8F8"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color_regular",
+      "label": "Active Language Bg Color (regular Header)",
+      "default": "#1D1D1D"
+    }
+  ],
+  "blocks": [
+    {
+      "name": "Country Icon",
+      "type": "country-icon",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Only for Countries that have been added to Markets"
+        },
+        {
+          "type": "text",
+          "id": "country_title",
+          "label": "Country ISO Code"
+        },
+        {
+          "type": "image_picker",
+          "id": "country_icon",
+          "label": "Country Icon",
+          "info": "Size Recommended: 180x180"
+        }
+      ]
+    },
+    {
+      "name": "Promo Block",
+      "type": "promo-block",
+      "settings": [
+        {
+          "type": "text",
+          "id": "promo_title",
+          "label": "Title of parent menu item"
+        },
+        {
+          "type": "image_picker",
+          "id": "promo_image",
+          "label": "Promo image",
+          "info": "Size Recommended: 1374x678"
+        }
+      ]
+    },
+    {
+      "name": "Customizable Menu Item",
+      "type": "menu-item-style",
+      "settings": [
+        {
+          "type": "text",
+          "id": "item_title",
+          "label": "Menu item title"
+        },
+        {
+          "type": "checkbox",
+          "id": "is_bold",
+          "label": "Enable Font Bold",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "is_red",
+          "label": "Enable Font Color Red",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "shop_by_size",
+          "label": "Shop by Size menu item",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Header"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,138 @@
+{% comment %}
+  Breadcrumbs
+
+  Metafields:
+    custom.breadcrumbs_custom_additional_link - single line text(list of values)
+
+  PubSub:
+
+  Additional Files:
+{% endcomment %}
+
+{{ 'section-breadcrumbs.css' | asset_url | stylesheet_tag }}
+{{ 'component-breadcrumbs.css' | asset_url | stylesheet_tag }}
+
+{% style %}
+  #shopify-section-{{ section.id }} .s-breadcrumbs {
+    background-color: {{ section.settings.background_color }};
+  }
+
+  #shopify-section-{{ section.id }} .c-breadcrumbs__link, .s-breadcrumbs .c-breadcrumbs__item:not(:first-of-type)::before {
+    color: {{ section.settings.link_color }};
+  }
+
+  {% if section.settings.display_section_mobile %}
+    #shopify-section-{{ section.id }} .s-breadcrumbs {
+      display: block;
+    }
+  {% endif %}
+
+  #shopify-section-{{ section.id }} .s-breadcrumbs {
+    padding-top: {{ section.settings.padding_top_mobile }}px;
+    padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+  }
+
+  @media screen and (min-width: 425px) {
+    #shopify-section-{{ section.id }} .s-breadcrumbs {
+      padding-top: {{ section.settings.padding_top_desktop }}px;
+      padding-bottom: {{ section.settings.padding_bottom_desktop }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="s-breadcrumbs">
+  <div class="s-breadcrumbs__inner">
+    {% render 'breadcrumbs' %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Breadcrumbs",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Sections background"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Section background color",
+      "default": "#F9F8F8"
+    },
+    {
+      "type": "header",
+      "content": "Link color"
+    },
+    {
+      "type": "color",
+      "id": "link_color",
+      "label": "Link color",
+      "default": "#8c8a8a"
+    },
+    {
+      "type": "header",
+      "content": "Sections paddings"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "min": 0,
+      "max": 160,
+      "step": 2,
+      "unit": "px",
+      "label": "Section padding top (Desktop)",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 160,
+      "step": 2,
+      "unit": "px",
+      "label": "Section padding bottom (Desktop)",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 160,
+      "step": 2,
+      "unit": "px",
+      "label": "Section padding top (mobile)",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 160,
+      "step": 2,
+      "unit": "px",
+      "label": "Section padding bottom (mobile)",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Display section on mobile"
+    },
+    {
+      "type": "checkbox",
+      "id": "display_section_mobile",
+      "label": "Display section on mobile",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Breadcrumbs"
+    }
+  ],
+  "limit": 1,
+  "enabled_on": {
+    "templates": ["collection", "product", "page", "blog", "article"]
+  }
+}
+{% endschema %}

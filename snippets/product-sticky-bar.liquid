@@ -1,0 +1,236 @@
+{% comment %}
+  Product sticky bar
+
+  Styles: component-product-sticky-bar.css
+  Scripts: component-product-sticky-bar.js
+
+  Accepts:
+    {Object} - product (required)
+    {Object} - selected_variant (required)
+{% endcomment %}
+
+{% liquid
+  assign rtl = false
+  if localization.language.iso_code == 'ar'
+    assign rtl = true
+  endif
+
+  assign has_one_variant = false
+
+  if product.has_only_default_variant or product.variants.size == 1
+    assign has_one_variant = true
+  endif
+
+  assign options_length = 0
+
+  for option in product.options_with_values
+    if option.values.size > 1
+      assign options_length = options_length | plus: 1
+    endif
+  endfor
+
+  assign swatch_options = 'Colour,Color,اللون' | downcase | split: ','
+%}
+
+{% assign current_variant = product.selected_or_first_available_variant %}
+{% assign sellable_status = product.metafields.custom.sellable_status.value %}
+{% comment %} please note, this metafield is used only for the international store {% endcomment %}
+
+<c-product-sticky-bar
+  class="c-product-sticky-bar {% if rtl %}c-product-sticky-bar--rtl{% endif %} {% if sellable_status == 'NO' %}c-product-sticky-bar--hide-mobile{% endif %}"
+  data-section-id="{{ section_id }}"
+  data-product-variant-id="{{ current_variant.id }}"
+  data-offer-tags="{{ product.metafields.custom.tags_list.value }}"
+  data-section-id="{{ section.id }}"
+  data-options-length="{{ options_length }}"
+  data-one-variant="{{ has_one_variant }}"
+  data-product-json="{{ product | json | escape }}"
+  data-variant-json="{{ product.selected_variant | json | escape }}"
+>
+  <div class="c-product-sticky-bar__inner">
+    <div class="c-product-sticky-bar__product-info">
+      {% if product.featured_image != blank %}
+        <div class="c-product-sticky-bar__image">
+          {% render 'image-lazy', image: product.featured_image %}
+        </div>
+      {% endif %}
+
+      <h2 class="c-product-sticky-bar__title">
+        {{ product.title }}
+      </h2>
+    </div>
+
+    {% comment %} Variants {% endcomment %}
+    <div class="c-product-sticky-bar__variants-wrapper">
+      {% liquid
+        assign first_option_to_show = 0
+        assign options_length = 0
+        for option in product.options_with_values
+          unless option.values.size == 1
+            assign options_length = options_length | plus: 1
+          endunless
+        endfor
+      %}
+      {% for option in product.options_with_values %}
+        {% liquid
+          assign option_name = option.name | downcase | handleize
+
+          assign no_disable = false
+          assign is_first_option = false
+          if forloop.first
+            assign is_first_option = true
+          endif
+          if first_option_to_show == 0
+            assign first_option_to_show = option.position
+          endif
+          if is_first_option or option.position == first_option_to_show
+            assign no_disable = true
+          endif
+          if options_length == 3 and option.position == 2
+            assign no_disable = true
+          endif
+          if options_length == 1
+            assign no_disable = false
+          endif
+        %}
+
+        {% unless swatch_options contains option_name or option.values[0] contains 'Default Title' %}
+          <div
+            class="c-product-sticky-bar__option-wrapper"
+          >
+            <div class="c-product-sticky-bar__option-name">{{ option.name }}</div>
+            <fieldset class="c-product-sticky-bar__option js-product-sticky-bar__option">
+              <details class="c-product-sticky-bar__select">
+                <summary class="c-product-sticky-bar__select-button">
+                  {% assign option_position_in_arr = option.position | minus: 1 %}
+                  <input
+                    class="c-product-sticky-bar__select-input checked"
+                    type="radio"
+                    name="{{ option.name }}--item-size"
+                    id="{{ option.name }}--default-size"
+                    title="{% if product.selected_variant != blank or product.variants.size == 1 %}{{ current_variant.options[option_position_in_arr] }}{% else %}{{ 'sections.main_product.select' | t }} {{ option.name }}{% endif %}"
+                    value="{% if product.selected_variant != blank or product.variants.size == 1 %}{{ current_variant.options[option_position_in_arr] }}{% else %}{{ 'sections.main_product.select' | t }} {{ option.name }}{% endif %}"
+                    data-option-position="{{ option.position }}"
+                    checked
+                  >
+                  <span class="c-product-sticky-bar__select-button-icon">
+                    {% render 'icon-arrow-down' %}
+                  </span>
+                </summary>
+                <ul class="c-product-sticky-bar__select-list">
+                  {% for value in option.values %}
+                    {% unless value == 'Default Title' %}
+                      <li class="c-product-sticky-bar__select-list-item">
+                        <label
+                          for="{{ option.name }}-{{ value.variant.id }}"
+                          class="c-product-sticky-bar__select-list-item-label js-product-sticky-bar__option-value {% if no_disable %}no-disable{% endif %}"
+                          title="{{ value }}"
+                          data-value="{{ value }}"
+                          {% comment %} data-variant-id="{{ current_variant.id }}" {% endcomment %}
+                          data-option-position="{{ option.position }}"
+                        >
+                          {{ value }}
+                          <span></span>
+                          {% render 'icon-check' %}
+                        </label>
+                      </li>
+                    {% endunless %}
+                  {% endfor %}
+                </ul>
+              </details>
+            </fieldset>
+          </div>
+        {% endunless %}
+      {% endfor %}
+    </div>
+
+    <div class="c-product-sticky-bar__product-form">
+      <div class="c-product-sticky-bar__price-container c-product-sticky-bar__price-container--desktop">
+        {%- if selected_variant.compare_at_price -%}
+          <span class="c-product-sticky-bar__price c-product-sticky-bar__price--discount">
+            <span class="c-product-sticky-bar__price-currency">
+              {{ shop.currency }}
+            </span>
+            {{ selected_variant.price | money_without_currency | replace: '.00', '' }}
+          </span>
+          <span class="c-product-sticky-bar__compare-at-price">
+            <span class="c-product-sticky-bar__price-currency">
+              {{ shop.currency }}
+            </span>
+            {{ selected_variant.compare_at_price | money_without_currency | replace: '.00', '' }}
+          </span>
+        {%- else -%}
+          <span class="c-product-sticky-bar__price">
+            <span class="c-product-sticky-bar__price-currency">
+              {{ shop.currency }}
+            </span>
+            {{ selected_variant.price | money_without_currency | replace: '.00', '' }}
+          </span>
+        {%- endif -%}
+      </div>
+
+      {% liquid
+        assign is_allowed_add_to_cart = product.selected_variant.available | default: false
+        assign same_variant_in_cart = 0
+
+        for cart_item in cart.items
+          if cart_item.variant.id == product.selected_variant.id
+            assign same_variant_in_cart = same_variant_in_cart | plus: cart_item.quantity
+          endif
+
+          if has_one_variant
+            if cart_item.variant.id == product.variants[0].id
+              assign same_variant_in_cart = same_variant_in_cart | plus: cart_item.quantity
+            endif
+          endif
+        endfor
+
+        if same_variant_in_cart >= product.selected_variant.inventory_quantity
+          assign is_allowed_add_to_cart = false
+        endif
+
+        assign max_quantity = product.selected_variant.inventory_quantity | minus: same_variant_in_cart
+
+        if has_one_variant
+          assign is_allowed_add_to_cart = product.variants[0].available
+          if same_variant_in_cart >= product.variants[0].inventory_quantity and product.variants[0].inventory_management != blank
+            assign is_allowed_add_to_cart = false
+          endif
+
+          assign max_quantity = product.variants[0].inventory_quantity | minus: same_variant_in_cart
+
+          if product.variants[0].inventory_management == blank
+            assign max_quantity = ''
+          endif
+        endif
+      %}
+
+      {% if sellable_status == 'YES' or sellable_status == blank %}
+        <button
+          type="submit"
+          class="c-product-sticky-bar__form-submit-button js-product-sticky-bar__form-submit-button {% unless is_allowed_add_to_cart %}disabled{% endunless %} {% unless product.variants.size == 1 or product.selected_variant != blank %}select{% endunless %}"
+          {% unless product.available %}
+            disabled
+          {% endunless %}
+          {% if product.selected_variant != blank and product.selected_variant.available == false %}
+            disabled
+          {% endif %}
+        >
+          <span class="c-product-sticky-bar__form-submit-button--add">
+            {% if is_allowed_add_to_cart %}
+              {{ 'sections.main_product.form_submit_button_text' | t }}
+            {% else %}
+              {{ 'sections.main_product.out_of_stock_text' | t }}
+            {% endif %}
+          </span>
+          <span class="c-product-sticky-bar__form-submit-button--not-available">
+            {{- 'sections.main_product.not_available' | t -}}
+          </span>
+          <span class="c-product-sticky-bar__form-submit-button--select">
+            {{- 'sections.main_product.select_sizes' | t -}}
+          </span>
+        </button>
+      {% endif %}
+    </div>
+  </div>
+</c-product-sticky-bar>

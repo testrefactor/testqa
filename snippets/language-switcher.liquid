@@ -1,0 +1,41 @@
+{% liquid
+  assign rtl = false
+  if localization.language.iso_code == 'ar'
+    assign rtl = true
+  endif
+%}
+
+{% assign unique_id_prefix = section.id %}
+{% assign form_id = unique_id_prefix | append: '_localization_form' %}
+
+<c-language-switcher class="c-language-switcher {% if rtl %}c-language-switcher--rtl{% endif %}">
+  {%- form 'localization', id: form_id -%}
+    <div class="c-language-switcher__list js-language-switcher__list">
+      {%- for language in localization.available_languages -%}
+        {% assign translation_path_language_label = 'components.language_switcher.language_switcher_'
+          | append: language.iso_code
+        %}
+
+        <div class="c-language-switcher__item {% if language.iso_code == localization.language.iso_code %}hide-mobile{% endif %}">
+          <input
+            class="c-language-switcher__input js-language-switcher__input"
+            type="radio"
+            id="{{ unique_id_prefix }}-language-{{ forloop.index }}"
+            name="locale_code"
+            value="{{ language.iso_code }}"
+            {% if language.iso_code == localization.language.iso_code %}
+              checked
+            {% endif %}
+          >
+          <label
+            class="c-language-switcher__label {% if language.iso_code == 'ar' %}c-language-switcher__label--ar{% endif %}"
+            for="{{ unique_id_prefix }}-language-{{ forloop.index }}"
+          >
+            <span class="c-language-switcher__label-desktop"> {{ translation_path_language_label | t }}</span>
+            <span class="c-language-switcher__label-mobile"> {{ language.endonym_name }}</span>
+          </label>
+        </div>
+      {%- endfor -%}
+    </div>
+  {%- endform -%}
+</c-language-switcher>

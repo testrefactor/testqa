@@ -1,0 +1,127 @@
+{{ 'component-video.css' | asset_url | stylesheet_tag }}
+
+{% liquid
+  assign rtl = false
+  if localization.language.iso_code == 'ar'
+    assign rtl = true
+  endif
+%}
+
+<product-gallery-zoom class="c-product-gallery-zoom {% if rtl %}c-product-gallery-zoom--rtl{% endif %}">
+  <button type="button" class="c-product-gallery-zoom__closer js-product-gallery-zoom__closer">
+    {% render 'icon-close' %}
+  </button>
+
+  <div class="c-product-gallery-zoom__zoom-wrapper">
+    <button class="c-product-gallery-zoom__zoom-button js-product-gallery-zoom__zoom-button-out" disabled>
+      {% render 'icon-zoom-minus' %}
+    </button>
+    <h4 class="c-product-gallery-zoom__zoom-title">
+      {{ 'components.product_gallery_zoom.title' | t }}
+    </h4>
+    <button class="c-product-gallery-zoom__zoom-button js-product-gallery-zoom__zoom-button-in">
+      {% render 'icon-zoom-plus' %}
+    </button>
+  </div>
+
+  <div class="c-product-gallery-zoom__progress js-product-gallery-zoom__progress">1/{{ product.images | size }}</div>
+
+  <swiper-container
+    class="c-product-gallery-zoom__wrapper js-product-gallery-zoom__wrapper"
+    slides-per-view="1"
+    speed="500"
+    thumbs-swiper=".js-product-gallery-zoom__thumb-wrapper"
+    loop="false"
+    css-mode="false"
+    navigation="false"
+    pagination="false"
+    scrollbar="false"
+    allow-touch-move="true"
+    init="false"
+  >
+    {% assign data_slide = 0 %}
+    {% for media in product.media %}
+      {% case media.media_type %}
+        {% when 'image' %}
+          <swiper-slide
+            class="c-product-gallery-zoom__cell js-product-gallery-zoom__cell"
+            data-slide="{{ data_slide }}"
+          >
+            <div class="c-product-gallery-zoom__container js-product-gallery-zoom__container" data-zoom="0">
+              {% if forloop.first %}
+                {% render 'image', image: media, ratio_wrap: false %}
+              {% else %}
+                {% render 'image-lazy', image: media %}
+              {% endif %}
+            </div>
+          </swiper-slide>
+          {% assign data_slide = data_slide | plus: 1 %}
+        {% when 'video' %}
+          <swiper-slide
+            class="c-product-gallery-zoom__cell js-product-gallery-zoom__cell"
+            data-slide="{{ data_slide }}"
+          >
+            <div class="c-product-gallery-zoom__container js-product-gallery-zoom__container" data-zoom="0">
+              {% render 'video', video: media, class: 'c-product-gallery-zoom__container--video' %}
+            </div>
+          </swiper-slide>
+          {% assign data_slide = data_slide | plus: 1 %}
+
+        {% when 'external_video' %}
+          <swiper-slide
+            class="c-product-gallery-zoom__cell js-product-gallery-zoom__cell"
+            data-slide="{{ data_slide }}"
+          >
+            <div class="c-product-gallery-zoom__container js-product-gallery-zoom__container">
+              {% render 'video', video: media, class: 'c-product-gallery-zoom__container--video' %}
+            </div>
+          </swiper-slide>
+          {% assign data_slide = data_slide | plus: 1 %}
+      {% endcase %}
+    {% endfor %}
+  </swiper-container>
+
+  <swiper-container
+    class="c-product-gallery-zoom__thumb-wrapper js-product-gallery-zoom__thumb-wrapper"
+    slides-per-view="5"
+    speed="500"
+    direction="vertical"
+    loop="false"
+    css-mode="false"
+    navigation="false"
+    pagination="false"
+    scrollbar="false"
+  >
+    {% assign data_slide = 0 %}
+    {% for media in product.media %}
+      {% case media.media_type %}
+        {% when 'image' %}
+          <swiper-slide class="c-product-gallery-zoom__thumb-cell {% if forloop.first %}swiper-slide-thumb-active{% endif %} js-product-gallery-zoom__thumb-cell">
+            <div class="c-product-gallery-zoom__thumb-container js-product-gallery-zoom__thumb-container">
+              {% if forloop.first %}
+                {% render 'image', image: media, ratio_wrap: false %}
+              {% else %}
+                {% render 'image-lazy', image: media %}
+              {% endif %}
+            </div>
+          </swiper-slide>
+          {% assign data_slide = data_slide | plus: 1 %}
+
+        {% when 'video' %}
+          <swiper-slide class="c-product-gallery-zoom__thumb-cell {% if forloop.first %}swiper-slide-thumb-active{% endif %} js-product-gallery-zoom__thumb-cell">
+            <div class="c-product-gallery-zoom__thumb-container js-product-gallery-zoom__thumb-container">
+              {% render 'image-lazy', image: media.preview_image %}
+            </div>
+          </swiper-slide>
+          {% assign data_slide = data_slide | plus: 1 %}
+        {% when 'external_video' %}
+          <swiper-slide class="c-product-gallery-zoom__thumb-cell {% if forloop.first %}swiper-slide-thumb-active{% endif %} js-product-gallery-zoom__thumb-cell">
+            <div class="c-product-gallery-zoom__thumb-container js-product-gallery-zoom__thumb-container">
+              {% render 'image-lazy', image: media.preview_image %}
+            </div>
+          </swiper-slide>
+          {% assign data_slide = data_slide | plus: 1 %}
+      {% endcase %}
+    {% endfor %}
+  </swiper-container>
+</product-gallery-zoom>

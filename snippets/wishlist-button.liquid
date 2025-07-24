@@ -1,0 +1,72 @@
+{% comment %}
+  Wishlist button
+  Button that add and delete product from wishlist
+
+  Scripts: component-wishlist-button.js
+
+  Metafields:
+
+  PubSub Publish:
+    Add product to a wishlist
+    window.PubSub.publish("wishlist-add-product", product);
+
+    Remove product from a wishlist
+    window.PubSub.publish("wishlist-remove-product", product);
+
+
+  PubSub Subscribed:
+    Update wishlist
+    window.PubSub.subscribe("wishlist-remove-product", product)
+
+    Set attributes to loaded products
+    window.PubSub.subscribe("wishlist-loaded", list)
+
+    Add product to a wishlist
+    window.PubSub.subscribe("wishlist-add-product", product)
+
+    Remove product from a wishlist
+    window.PubSub.subscribe("wishlist-remove-product", product)
+
+  Additional Files:
+  swym-helper.js - add to theme.liquid
+
+  Accepts:
+   {Object} - product - required
+   {Number} - variant_id - optional (rewrite variant id from product)
+   {String} - class - optional
+{% endcomment %}
+
+{% assign epi = '' %}
+
+{% if variant_id %}
+  {% assign epi = variant_id %}
+{% else %}
+  {% if product.selected_variant.id %}
+    {% assign epi = product.selected_variant.id %}
+  {% else %}
+    {% assign epi = product.variants[0].id %}
+  {% endif %}
+{% endif %}
+
+{% if product_id %}
+  {% assign empi = product_id %}
+{% else %}
+  {% assign empi = product.id %}
+{% endif %}
+
+<c-wishlist-button
+  class="{{ class }}"
+  data-epi="{{ epi }}"
+  data-empi="{{ empi }}"
+  data-du="https://{{ shop.domain }}{{ product.url }}"
+  data-handle="{{ product.handle }}"
+  data-product-json="{{ product | json | escape }}"
+>
+  <button
+    type="button"
+    class="js-wishlist-button__button"
+    data-action="add"
+  >
+    <span>{% render 'icon-wishlist' %}</span>
+  </button>
+</c-wishlist-button>

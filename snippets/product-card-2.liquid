@@ -1,0 +1,139 @@
+{% comment %}
+  Product card 2. Using on pdp in "Shop the look" block
+
+  Accepts:
+    product {Object} - Product object
+{% endcomment %}
+
+{% assign current_variant = product.selected_or_first_available_variant %}
+
+{% liquid
+  assign rtl = false
+  if localization.language.iso_code == 'ar'
+    assign rtl = true
+  endif
+%}
+
+<c-product-card-2 class="c-product-card-2 js-product-card-2 {% if rtl %}c-product-card-2--rtl{% endif %}">
+  <div class="c-product-card-2__inner">
+    {% comment %} Image {% endcomment %}
+    <a href="{{ product.url }}" class="c-product-card-2__image">
+      {% if product.metafields.custom.product_tags.value != blank %}
+        <div class="c-product-card-2__badges">
+          {% for badge in product.metafields.custom.product_tags.value %}
+            {% if forloop.first %}
+              <span
+                class="c-product-card-2__badge"
+                style="background-color: {{ badge.background_color |  append: '' | color_to_rgb | replace: ')', ', 0.5)'  }};"
+              >
+                {{- badge.name -}}
+              </span>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% if product.metafields.custom.shop_the_look_image.value %}
+        {% render 'image-lazy', image: product.metafields.custom.shop_the_look_image.value %}
+      {% elsif product.featured_image != blank %}
+        {% render 'image-lazy', image: product.featured_image %}
+      {% endif %}
+    </a>
+
+    {% comment %} Main {% endcomment %}
+    <div class="c-product-card-2__main">
+      <a href="{{ product.url }}" class="c-product-card-2__title">
+        {{ product.title }}
+      </a>
+
+      {% comment %} Colors {% endcomment %}
+      <div class="c-product-card-2__color-option-wrapper">
+        {% comment %} Get Color option position {% endcomment %}
+        {% for product_option in product.options_with_values %}
+          {% case product_option.name %}
+            {% when 'Color' %}
+              {% assign color_option_position = product_option.position | minus: 1 %}
+              {% assign color_option_name = product.options_with_values[color_option_position].values[0] %}
+          {% endcase %}
+        {% endfor %}
+
+        <fieldset class="c-product-card-2__option-fieldset js-product-card-2__option">
+          {% comment %} Current color {% endcomment %}
+          <div class="c-product-card-2__swatch-wrapper">
+            <label
+              class="c-product-card-2__swatch-label"
+              style="background-color: {{ product.options_with_values[color_option_position].values[0].swatch.color }};"
+              aria-label="{{ color_option_name }}"
+            >
+            </label>
+          </div>
+          {% for color_variant in product.metafields.custom.color_variants.value %}
+            {% for product_option in color_variant.options_with_values %}
+              {% case product_option.name %}
+                {% when 'Color' %}
+                  {% assign color_option_position = product_option.position | minus: 1 %}
+                  {% assign color_option_url = color_variant.url %}
+                  {% assign color_option_id = color_variant.id %}
+                  {% assign color_option_name = color_variant.options_with_values[color_option_position].values[0] %}
+              {% endcase %}
+            {% endfor %}
+
+            {% assign final_variant = color_variant.selected_or_first_available_variant %}
+            <div class="c-product-card-2__swatch-wrapper">
+              <input
+                type="radio"
+                class="c-product-card-2__option-input js-product-card-2__color-option-input"
+                id="{{ 'now' | date: '%s' }}_product-card-2-color-{{ color_option_id }}"
+                name="{{ 'now' | date: '%s' }}_product-card-2-color-{{ product.id }}"
+                value="{{- color_option_url -}}?variant={{- final_variant.id -}}"
+                hidden
+              >
+              <label
+                for="{{ 'now' | date: '%s' }}_product-card-2-color-{{ color_option_id }}"
+                class="c-product-card-2__swatch-label"
+                style="background-color: {{ color_variant.options_with_values[color_option_position].values[0].swatch.color }};"
+                aria-label="{{ color_option_name }}"
+              >
+              </label>
+            </div>
+          {% endfor %}
+        </fieldset>
+      </div>
+
+      {% comment %} Price {% endcomment %}
+      <div class="c-product-card-2__price-container">
+        {%- if current_variant.compare_at_price -%}
+          <span class="c-product-card-2__price c-product-card-2__price--discount">
+            <span class="c-product-card-2__price-currency">
+              {{ shop.currency }}
+            </span>
+            {{ current_variant.price | money_without_currency | replace: '.00', '' }}
+          </span>
+          <span class="c-product-card-2__compare-at-price">
+            <span class="c-product-card-2__price-currency">
+              {{ shop.currency }}
+            </span>
+            {{ current_variant.compare_at_price | money_without_currency | replace: '.00', '' }}
+          </span>
+        {%- else -%}
+          <span class="c-product-card-2__price">
+            <span class="c-product-card-2__price-currency">
+              {{ shop.currency }}
+            </span>
+            {{ current_variant.price | money_without_currency | replace: '.00', '' }}
+          </span>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {% comment %} Add to Bag button {% endcomment %}
+    <button
+      type="button"
+      class="c-product-card-2__buy-button js-product-card-2__buy-button"
+      data-variant-id="{{ current_variant.id }}"
+      data-product-handle="{{ current_variant.product.handle }}"
+    >
+      {% render 'icon-plus-white' %}
+    </button>
+  </div>
+</c-product-card-2>
