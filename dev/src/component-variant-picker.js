@@ -405,24 +405,26 @@ if (!customElements.get("c-variant-picker")) {
           ],
         };
 
-        await fetch(window.Shopify.routes.root + "cart/add.js", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        })
-          .then((response) => response.json())
-          .then((response) => {
-            this.submitButton.removeAttribute("disabled");
-            window.PubSub.publish("cart-updated", response);
-            this.gtmAnalyticAddProductEvent(response.items[0]);
-            this.handleModalClose();
-          })
-          .catch((error) => {
-            this.submitButton.removeAttribute("disabled");
-            console.error("Error:", error);
-          });
+        // await fetch(window.Shopify.routes.root + "cart/add.js", {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   body: JSON.stringify(formData),
+        // })
+        //   .then((response) => response.json())
+        //   .then((response) => {
+        //     this.submitButton.removeAttribute("disabled");
+        //     window.PubSub.publish("cart-updated", response);
+        //     this.gtmAnalyticAddProductEvent(response.items[0]);
+        //     this.handleModalClose();
+        //   })
+        //   .catch((error) => {
+        //     this.submitButton.removeAttribute("disabled");
+        //     console.error("Error:", error);
+        //   });
+
+        this.handleModalClose();
       };
 
       async getPickerHtml(productHandle, variantId) {

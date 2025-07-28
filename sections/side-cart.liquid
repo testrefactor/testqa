@@ -113,12 +113,6 @@
         <button class="s-side-cart__button-close js-side-cart__button-close">
           {% render 'icon-close' %}
         </button>
-
-        <div class="s-side-cart__delivery-icon js-side-cart__delivery-icon">
-          {% if cart.item_count > 0 %}
-            {% render 'icon-delivery-logo' %}
-          {% endif %}
-        </div>
       </div>
       <div class="s-side-cart__body {% if cart.item_count == 0 %}s-side-cart__body--empty{% endif %}">
         {% if cart.item_count == 0 %}

@@ -1,13 +1,13 @@
 {{ 'section-main-product.css' | asset_url | stylesheet_tag }}
 {{ 'component-product-card-2.css' | asset_url | stylesheet_tag }}
-{{ 'component-product-sticky-bar.css' | asset_url | stylesheet_tag }}
+{% comment %} {{ 'component-product-sticky-bar.css' | asset_url | stylesheet_tag }} {% endcomment %}
 {{ 'component-product-gallery-zoom.css' | asset_url | stylesheet_tag }}
 {{ 'component-pdp-accordion.css' | asset_url | stylesheet_tag }}
 {{ 'component-video.css' | asset_url | stylesheet_tag }}
 
 <script src="{{ 'section-main-product.js' | asset_url }}" defer></script>
 <script src="{{ 'component-product-card-2.js' | asset_url }}" defer></script>
-<script src="{{ 'component-product-sticky-bar.js' | asset_url }}" defer></script>
+{% comment %} <script src="{{ 'component-product-sticky-bar.js' | asset_url }}" defer></script> {% endcomment %}
 <script src="{{ 'component-product-gallery-zoom.js' | asset_url }}" defer></script>
 <script src="{{ "component-wishlist-button.js" | asset_url }}" defer></script>
 {% if section.settings.show_tabby and settings.tabby_public_api != blank and settings.tabby_merchant_code != blank %}
@@ -736,9 +736,9 @@
 </s-main-product>
 
 {% comment %} Sticky bar {% endcomment %}
-<div class="s-main-product__sticky-bar s-main-product__sticky-bar--hide js-main-product__sticky-bar">
+{% comment %} <div class="s-main-product__sticky-bar s-main-product__sticky-bar--hide js-main-product__sticky-bar">
   {% render 'product-sticky-bar', product: product, selected_variant: current_variant, section_id: section.id %}
-</div>
+</div> {% endcomment %}
 
 {% schema %}
 {

@@ -25,6 +25,8 @@
   if localization.language.iso_code == 'ar'
     assign rtl = true
   endif
+
+  assign limit_plus = section.settings.product_limit | plus: 1
 %}
 
 <s-recommended-products
@@ -32,10 +34,10 @@
   data-section-id="{{ section.id }}"
   data-product-id="{{ product.id }}"
   data-product-handle="{{ product.handle }}"
-  data-product-limit="{{ section.settings.product_limit }}"
+  data-product-limit="{{ limit_plus }}"
 >
   <div class="s-recommended-products__container">
-    <div class='s-recommended-products__top'>
+    <div class="s-recommended-products__top">
       {% if section.settings.show_title %}
         <h2 class="s-recommended-products__title">
           {{ 'sections.recommended_products.recommended_title' | t }}
@@ -43,46 +45,45 @@
       {% endif %}
 
       {% if section.settings.show_shop_all %}
-        <span class='js-recommended-products__shop-all-wrapper'></span>
+        <span class="js-recommended-products__shop-all-wrapper"></span>
       {% endif %}
     </div>
 
     <div class="s-recommended-products__slider-wrapper js-recommended-products__slider-wrapper">
       {%- if recommendations.performed? and recommendations.products_count > 0 -%}
         <swiper-container
-        class="s-recommended-products__slider js-recommended-products__slider"
-        init="false"
-        scrollbar="true"
-        navigation="false"
-        loop="true"
-        speed="500"
-        slides-per-view="2"
-        space-between="60"
-        breakpoints='
-          {
-            "358": {
-              "slidesPerView": 2,
-              "spaceBetween": 24
-            },
-            "560": {
-              "slidesPerView": 3,
-              "spaceBetween": 16
-            },
-            "1024": {
-              "slidesPerView": 4
+          class="s-recommended-products__slider js-recommended-products__slider"
+          init="false"
+          scrollbar="true"
+          navigation="false"
+          loop="true"
+          speed="500"
+          slides-per-view="2"
+          space-between="60"
+          breakpoints='
+            {
+              "358": {
+                "slidesPerView": 2,
+                "spaceBetween": 24
+              },
+              "560": {
+                "slidesPerView": 3,
+                "spaceBetween": 16
+              },
+              "1024": {
+                "slidesPerView": 4
+              }
             }
-          }
-        '
-      >
-      {% assign limit_plus = section.settings.product_limit |  plus: 1 %}
-        {%- for product in recommendations.products limit: limit_plus -%}
-          <swiper-slide
-            class='js-recommended-products__slide'
-            data-collection='{{ product.collections.first.url }}'
-          >
-            {% render 'product-card', product: product %}
-          </swiper-slide>
-        {%- endfor -%}
+          '
+        >
+          {%- for product in recommendations.products limit: limit_plus -%}
+            <swiper-slide
+              class="js-recommended-products__slide"
+              data-collection="{{ product.collections.first.url }}"
+            >
+              {% render 'product-card', product: product %}
+            </swiper-slide>
+          {%- endfor -%}
         </swiper-container>
       {% endif %}
     </div>
@@ -97,8 +98,8 @@
     {% endif %}
   </div>
 
-  <template class='t-recommended-products__shop-all'>
-    <a href='{link}' class='s-recommended-products__shop-all'>
+  <template class="t-recommended-products__shop-all">
+    <a href="{link}" class="s-recommended-products__shop-all">
       {{ 'sections.recommended_products.shop_all' | t }}
     </a>
   </template>
@@ -163,7 +164,7 @@
     {
       "type": "range",
       "id": "product_limit",
-      "min": 4,
+      "min": 3,
       "max": 24,
       "step": 1,
       "label": "Product limit for slider",

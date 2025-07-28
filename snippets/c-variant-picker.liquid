@@ -297,7 +297,6 @@
 
             {% liquid
               assign is_allowed_add_to_cart = true  # Примусово дозволяємо додавання до кошика
-              assign max_quantity = 10  # Обмеження кількості (можна прибрати для необмеженого введення)
             %}
 
             {% comment %} Qty {% endcomment %}
@@ -315,7 +314,6 @@
                 id="product-qty"
                 class="c-variant-picker__qty-input js-variant-picker__qty-input"
                 min="1"
-                max="{{ max_quantity }}"
                 value="1"
               >
               <button
