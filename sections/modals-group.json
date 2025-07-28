@@ -24,9 +24,35 @@
         "empty_cta": "Join Amirah Club",
         "empty_cta_ar": "Join Amirah Club"
       }
+    },
+    "modal_size_guide_BRmgHD": {
+      "type": "modal-size-guide",
+      "blocks": {
+        "table_page_ramFc3": {
+          "type": "table-page",
+          "settings": {
+            "page": "size-chart-t-shirts",
+            "product_types": "t-shirts",
+            "is_bra": false,
+            "underband_cm_values": "",
+            "underband_inch_values": "",
+            "overbust_cm_values": "",
+            "overbust_inch_values": "",
+            "calculations": "",
+            "error_text": "Kindly review the selected Bust and Band sizes. Please check our measuring guide for more information",
+            "error_text_ar": "AR Kindly review the selected Bust and Band sizes. Please check our measuring guide for more information"
+          }
+        }
+      },
+      "block_order": [
+        "table_page_ramFc3"
+      ],
+      "name": "Modal Size Guide",
+      "settings": {}
     }
   },
   "order": [
-    "side_cart_QtDNge"
+    "side_cart_QtDNge",
+    "modal_size_guide_BRmgHD"
   ]
 }
