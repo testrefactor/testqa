@@ -49,10 +49,16 @@
       ],
       "name": "Modal Size Guide",
       "settings": {}
+    },
+    "modal_variant_picker_UTmqKM": {
+      "type": "modal-variant-picker",
+      "name": "Modal Variant Picker",
+      "settings": {}
     }
   },
   "order": [
     "side_cart_QtDNge",
-    "modal_size_guide_BRmgHD"
+    "modal_size_guide_BRmgHD",
+    "modal_variant_picker_UTmqKM"
   ]
 }
