@@ -51,7 +51,7 @@
         "image_mNGnTh": {
           "type": "image",
           "settings": {
-            "image_mobile": "shopify://shop_images/tshirts.jpg",
+            "image_mobile": "shopify://shop_images/more-kylo-ren.gif",
             "image_desktop": "shopify://shop_images/3b0748421cb84d7754a8b481700601d414572a15.png"
           }
         },
@@ -155,7 +155,7 @@
         "text_6mxNKJ"
       ],
       "settings": {
-        "enable_height": true,
+        "enable_height": false,
         "banner_height_desktop": 430,
         "banner_height_mobile": 550,
         "margin_top_desktop": 0,
@@ -175,7 +175,7 @@
         "content_horizontal_align_mobile": "center",
         "content_vertical_align_desktop": "center",
         "content_vertical_align_mobile": "flex-end",
-        "banner_link": "",
+        "banner_link": "shopify://pages/size-chart-t-shirts",
         "slider_delay": 3000,
         "section_title": "",
         "section_title_ar": "",
