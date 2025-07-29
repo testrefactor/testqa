@@ -99,7 +99,7 @@
             "text_display": "both",
             "content": "<p>3 for 499 AED</p>",
             "text_color": "#d50037",
-            "text_size": 60,
+            "text_size": 30,
             "text_size_mobile": 40,
             "title_weight": 900,
             "align": "center",
@@ -123,7 +123,7 @@
             "button_bg_color_hover": "#d50037",
             "button_border_color": "#d50037",
             "button_border_color_hover": "#d50037",
-            "button_size": 16,
+            "button_size": 26,
             "button_size_mobile": 16,
             "align": "center"
           }
@@ -138,7 +138,7 @@
             "text_display": "both",
             "content": "<p>sale</p>",
             "text_color": "#d50037",
-            "text_size": 16,
+            "text_size": 48,
             "text_size_mobile": 16,
             "title_weight": 400,
             "align": "center",
