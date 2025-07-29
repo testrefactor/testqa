@@ -33,7 +33,7 @@
           "settings": {
             "page": "size-chart-t-shirts",
             "product_types": "t-shirts",
-            "is_bra": false,
+            "is_bra": true,
             "underband_cm_values": "",
             "underband_inch_values": "",
             "overbust_cm_values": "",
