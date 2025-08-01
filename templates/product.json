@@ -48,31 +48,7 @@
     "banner_blocks": {
       "type": "banner-blocks",
       "blocks": {
-        "image_aRBRyF": {
-          "type": "image",
-          "settings": {
-            "image_mobile": "shopify://shop_images/more-kylo-ren.gif",
-            "image_desktop": "shopify://shop_images/tshirts.jpg"
-          }
-        },
-        "text_yVAxan": {
-          "type": "text",
-          "settings": {
-            "top_padding_desktop": 0,
-            "top_padding_mobile": 0,
-            "bottom_padding_desktop": 0,
-            "bottom_padding_mobile": 0,
-            "text_display": "desktop",
-            "content": "<p>BASIC T-SHIRTS</p>",
-            "text_color": "#d50037",
-            "text_size": 30,
-            "text_size_mobile": 30,
-            "title_weight": 700,
-            "align": "center",
-            "true_alignment": "center"
-          }
-        },
-        "text_jeczHL": {
+        "text_Y8aJCN": {
           "type": "text",
           "settings": {
             "top_padding_desktop": 0,
@@ -144,15 +120,21 @@
             "align": "center",
             "true_alignment": "center"
           }
+        },
+        "image_WV86JG": {
+          "type": "image",
+          "settings": {
+            "image_mobile": "shopify://shop_images/more-kylo-ren.gif",
+            "image_desktop": "shopify://shop_images/tshirts.jpg"
+          }
         }
       },
       "block_order": [
-        "image_aRBRyF",
-        "text_yVAxan",
-        "text_jeczHL",
+        "text_Y8aJCN",
         "text_8hbD9r",
         "button_Hn6GtD",
-        "text_6mxNKJ"
+        "text_6mxNKJ",
+        "image_WV86JG"
       ],
       "settings": {
         "enable_height": false,
