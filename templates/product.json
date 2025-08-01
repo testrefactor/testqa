@@ -48,31 +48,24 @@
     "banner_blocks": {
       "type": "banner-blocks",
       "blocks": {
-        "image_mNGnTh": {
-          "type": "image",
-          "settings": {
-            "image_mobile": "shopify://shop_images/more-kylo-ren.gif",
-            "image_desktop": "shopify://shop_images/3b0748421cb84d7754a8b481700601d414572a15.png"
-          }
-        },
-        "text_yYwQMA": {
+        "text_yVAxan": {
           "type": "text",
           "settings": {
             "top_padding_desktop": 0,
             "top_padding_mobile": 0,
             "bottom_padding_desktop": 0,
             "bottom_padding_mobile": 0,
-            "text_display": "both",
-            "content": "<p>AR Just online</p>",
+            "text_display": "desktop",
+            "content": "<p>BASIC T-SHIRTS</p>",
             "text_color": "#d50037",
-            "text_size": 20,
-            "text_size_mobile": 20,
+            "text_size": 30,
+            "text_size_mobile": 30,
             "title_weight": 700,
             "align": "center",
             "true_alignment": "center"
           }
         },
-        "text_QFrDAC": {
+        "text_jeczHL": {
           "type": "text",
           "settings": {
             "top_padding_desktop": 0,
@@ -147,9 +140,8 @@
         }
       },
       "block_order": [
-        "image_mNGnTh",
-        "text_yYwQMA",
-        "text_QFrDAC",
+        "text_yVAxan",
+        "text_jeczHL",
         "text_8hbD9r",
         "button_Hn6GtD",
         "text_6mxNKJ"
@@ -171,7 +163,7 @@
         "content_padding_left_mobile": 0,
         "content_padding_right_mobile": 0,
         "blocks_margin_right": 2,
-        "content_horizontal_align_desktop": "center",
+        "content_horizontal_align_desktop": "flex-end",
         "content_horizontal_align_mobile": "center",
         "content_vertical_align_desktop": "center",
         "content_vertical_align_mobile": "flex-end",
