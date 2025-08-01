@@ -62,7 +62,7 @@
             "top_padding_mobile": 0,
             "bottom_padding_desktop": 0,
             "bottom_padding_mobile": 0,
-            "text_display": "both",
+            "text_display": "mobile",
             "content": "<p>AR Just online</p>",
             "text_color": "#d50037",
             "text_size": 20,
@@ -73,6 +73,159 @@
           }
         },
         "text_paP9Nn": {
+          "type": "text",
+          "settings": {
+            "top_padding_desktop": 0,
+            "top_padding_mobile": 0,
+            "bottom_padding_desktop": 0,
+            "bottom_padding_mobile": 0,
+            "text_display": "desktop",
+            "content": "<p>BASIC T-SHIRTS</p>",
+            "text_color": "#d50037",
+            "text_size": 30,
+            "text_size_mobile": 30,
+            "title_weight": 700,
+            "align": "center",
+            "true_alignment": "center"
+          }
+        },
+        "text_RFNpj6": {
+          "type": "text",
+          "settings": {
+            "top_padding_desktop": 0,
+            "top_padding_mobile": 0,
+            "bottom_padding_desktop": 0,
+            "bottom_padding_mobile": 0,
+            "text_display": "desktop",
+            "content": "<p>BASIC T-SHIRTS</p>",
+            "text_color": "#d50037",
+            "text_size": 30,
+            "text_size_mobile": 30,
+            "title_weight": 700,
+            "align": "center",
+            "true_alignment": "center"
+          }
+        },
+        "text_DDKR3J": {
+          "type": "text",
+          "settings": {
+            "top_padding_desktop": 0,
+            "top_padding_mobile": 0,
+            "bottom_padding_desktop": 0,
+            "bottom_padding_mobile": 0,
+            "text_display": "desktop",
+            "content": "<p>BASIC T-SHIRTS</p>",
+            "text_color": "#d50037",
+            "text_size": 30,
+            "text_size_mobile": 30,
+            "title_weight": 700,
+            "align": "center",
+            "true_alignment": "center"
+          }
+        },
+        "text_J7JqyB": {
+          "type": "text",
+          "settings": {
+            "top_padding_desktop": 0,
+            "top_padding_mobile": 0,
+            "bottom_padding_desktop": 0,
+            "bottom_padding_mobile": 0,
+            "text_display": "desktop",
+            "content": "<p>BASIC T-SHIRTS</p>",
+            "text_color": "#d50037",
+            "text_size": 30,
+            "text_size_mobile": 30,
+            "title_weight": 700,
+            "align": "center",
+            "true_alignment": "center"
+          }
+        },
+        "text_fJmwUG": {
+          "type": "text",
+          "settings": {
+            "top_padding_desktop": 0,
+            "top_padding_mobile": 0,
+            "bottom_padding_desktop": 0,
+            "bottom_padding_mobile": 0,
+            "text_display": "desktop",
+            "content": "<p>BASIC T-SHIRTS</p>",
+            "text_color": "#d50037",
+            "text_size": 30,
+            "text_size_mobile": 30,
+            "title_weight": 700,
+            "align": "center",
+            "true_alignment": "center"
+          }
+        },
+        "text_6bPiyE": {
+          "type": "text",
+          "settings": {
+            "top_padding_desktop": 0,
+            "top_padding_mobile": 0,
+            "bottom_padding_desktop": 0,
+            "bottom_padding_mobile": 0,
+            "text_display": "desktop",
+            "content": "<p>BASIC T-SHIRTS</p>",
+            "text_color": "#d50037",
+            "text_size": 30,
+            "text_size_mobile": 30,
+            "title_weight": 700,
+            "align": "center",
+            "true_alignment": "center"
+          }
+        },
+        "text_iNbTpe": {
+          "type": "text",
+          "settings": {
+            "top_padding_desktop": 0,
+            "top_padding_mobile": 0,
+            "bottom_padding_desktop": 0,
+            "bottom_padding_mobile": 0,
+            "text_display": "desktop",
+            "content": "<p>BASIC T-SHIRTS</p>",
+            "text_color": "#d50037",
+            "text_size": 30,
+            "text_size_mobile": 30,
+            "title_weight": 700,
+            "align": "center",
+            "true_alignment": "center"
+          }
+        },
+        "text_DULNmj": {
+          "type": "text",
+          "settings": {
+            "top_padding_desktop": 0,
+            "top_padding_mobile": 0,
+            "bottom_padding_desktop": 0,
+            "bottom_padding_mobile": 0,
+            "text_display": "desktop",
+            "content": "<p>BASIC T-SHIRTS</p>",
+            "text_color": "#d50037",
+            "text_size": 30,
+            "text_size_mobile": 30,
+            "title_weight": 700,
+            "align": "center",
+            "true_alignment": "center"
+          }
+        },
+        "text_7qF7qB": {
+          "type": "text",
+          "settings": {
+            "top_padding_desktop": 0,
+            "top_padding_mobile": 0,
+            "bottom_padding_desktop": 0,
+            "bottom_padding_mobile": 0,
+            "text_display": "desktop",
+            "content": "<p>BASIC T-SHIRTS</p>",
+            "text_color": "#d50037",
+            "text_size": 30,
+            "text_size_mobile": 30,
+            "title_weight": 700,
+            "align": "center",
+            "true_alignment": "center"
+          }
+        },
+        "text_QFrDAC": {
           "type": "text",
           "settings": {
             "top_padding_desktop": 0,
@@ -150,6 +303,15 @@
         "image_mNGnTh",
         "text_yYwQMA",
         "text_paP9Nn",
+        "text_RFNpj6",
+        "text_DDKR3J",
+        "text_J7JqyB",
+        "text_fJmwUG",
+        "text_6bPiyE",
+        "text_iNbTpe",
+        "text_DULNmj",
+        "text_7qF7qB",
+        "text_QFrDAC",
         "text_8hbD9r",
         "button_Hn6GtD",
         "text_6mxNKJ"
@@ -163,15 +325,15 @@
         "margin_top_mobile": 0,
         "margin_bottom_mobile": 22,
         "padding_left_desktop": 0,
-        "padding_right_desktop": 0,
+        "padding_right_desktop": 50,
         "padding_left_mobile": 20,
-        "padding_right_mobile": 20,
+        "padding_right_mobile": 94,
         "content_padding_left_desktop": 0,
         "content_padding_right_desktop": 0,
         "content_padding_left_mobile": 0,
         "content_padding_right_mobile": 0,
         "blocks_margin_right": 2,
-        "content_horizontal_align_desktop": "flex-end",
+        "content_horizontal_align_desktop": "center",
         "content_horizontal_align_mobile": "center",
         "content_vertical_align_desktop": "center",
         "content_vertical_align_mobile": "flex-end",
@@ -196,7 +358,7 @@
         "margin_bottom_mobile": 50,
         "bgd_color_d": "#ffffff",
         "bgd_color_m": "#ffffff",
-        "product_limit": 3,
+        "product_limit": 14,
         "show_title": true,
         "show_shop_all": false,
         "show_arrows": true
