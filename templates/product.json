@@ -196,7 +196,7 @@
         "margin_bottom_mobile": 50,
         "bgd_color_d": "#ffffff",
         "bgd_color_m": "#ffffff",
-        "product_limit": 24,
+        "product_limit": 19,
         "show_title": true,
         "show_shop_all": false,
         "show_arrows": true
