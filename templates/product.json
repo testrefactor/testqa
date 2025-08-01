@@ -48,6 +48,13 @@
     "banner_blocks": {
       "type": "banner-blocks",
       "blocks": {
+        "image_aRBRyF": {
+          "type": "image",
+          "settings": {
+            "image_mobile": "shopify://shop_images/more-kylo-ren.gif",
+            "image_desktop": "shopify://shop_images/tshirts.jpg"
+          }
+        },
         "text_yVAxan": {
           "type": "text",
           "settings": {
@@ -140,6 +147,7 @@
         }
       },
       "block_order": [
+        "image_aRBRyF",
         "text_yVAxan",
         "text_jeczHL",
         "text_8hbD9r",
